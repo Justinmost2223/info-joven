@@ -1,196 +1,101 @@
 "use client";
 
-
-
 import React, { useState, useEffect, useMemo } from 'react';
-
 import { motion, AnimatePresence } from 'framer-motion';
-
 import { 
-
   Users, Globe, Tv, Trophy, Shield, MessageSquare, 
-
   ChevronRight, BarChart3, Volume2, Instagram, 
-
   Languages, Info, Share2, Award, Play, Pause,
-
   CheckCircle2, ExternalLink, Zap, Heart, TrendingUp
-
 } from 'lucide-react';
 
-
-
 // --- TRADUCCIONES ---
-
 const TRANSLATIONS = {
-
   es: {
-
     welcome: "Bienvenido a la resistencia intelectual.",
-
     onboarding: "Introduce tu nombre y apellido para participar en el debate.",
-
     reading: "personas leyendo ahora",
-
     quickContext: "Contexto Rápido",
-
     biasAnalysis: "Análisis de Sesgo (IA)",
-
     reputation: "Reputación",
-
     comments: "Comunidad y Debate",
-
     postComment: "Escribe tu argumento aquí...",
-
     vote: "Enviar Voto",
-
     capture: "Modo Captura IG",
-
     audio: "Escuchar Noticia",
-
     identityTitle: "¿Por qué INFOJOVEN?",
-
     identityBody: "Somos un equipo híbrido de IA y humanos que limpian el ruido mediático. Ofrecemos noticias objetivas, largas y analíticas, diseñadas para que los jóvenes cultos debatan con respeto y datos. Aquí la profundidad es el nuevo lujo.",
-
     back: "Volver a Portada",
-
     featured: "DESTACADA",
-
     sources: "Fuentes:",
-
     voted: "¡Voto registrado!",
-
     popular: "LO MÁS DESTACADO",
-
     placeholderName: "Tu nombre..."
-
   },
-
   en: {
-
     welcome: "Welcome to the intellectual resistance.",
-
     onboarding: "Enter your full name to join the debate.",
-
     reading: "people reading now",
-
     quickContext: "Quick Context",
-
     biasAnalysis: "Bias Analysis (AI)",
-
     reputation: "Reputation",
-
     comments: "Community & Debate",
-
     postComment: "Write your argument here...",
-
     vote: "Submit Vote",
-
     capture: "IG Capture Mode",
-
     audio: "Listen to News",
-
     identityTitle: "Why INFOJOVEN?",
-
     identityBody: "We are a hybrid AI-human team clearing media noise. We offer objective, long-form, analytical news designed for cultured youth to debate with respect and data. Here, depth is the new luxury.",
-
     back: "Back to Home",
-
     featured: "FEATURED",
-
     sources: "Sources:",
-
     voted: "Vote recorded!",
-
     popular: "MOST FEATURED",
-
     placeholderName: "Your name..."
-
   }
-
 };
 
-
-
 // --- DATOS DE NOTICIAS ---
-
 const NEWS_DATA = [
-
   {
-
     id: 1,
-
     category: "Geopolítica",
-
     categoryEn: "Geopolitics",
-
     title: "Venezuela-EE.UU. 2026: El Nuevo Eje Energético",
-
     titleEn: "Venezuela-USA 2026: The New Energy Axis",
-
     context: "Tras la crisis de semiconductores, el petróleo pesado vuelve a ser la pieza reina en el tablero diplomático global.",
-
     contextEn: "After the semiconductor crisis, heavy oil becomes the queen piece on the global diplomatic board again.",
-
     content: `En enero de 2026, la administración de Washington ha dado un giro pragmático sin precedentes. El 'Pacto del Caribe' no es solo un acuerdo comercial; es una reconfiguración del poder en Occidente. Venezuela, poseedora de las mayores reservas probadas, ha aceptado una auditoría internacional de sus procesos democráticos a cambio de la eliminación total de sanciones petroleras. Este movimiento busca asfixiar la dependencia de los metales raros controlados por potencias asiáticas, volviendo al carbono como puente hacia la transición verde de 2030.
 
-
-
     Los analistas de INFOJOVEN sugieren que este pacto es el fin de la era de la 'confrontación moral' y el inicio del 'pragmatismo de recursos'. Para la Gen Z, esto plantea un dilema ético masivo: ¿Es aceptable sacrificar la pureza ideológica por una estabilidad energética que permita financiar la infraestructura renovable? Los datos indican que el flujo de 1.5 millones de barriles diarios adicionales bajará el costo de la electricidad en Florida y Madrid en un 22%, pero el costo político interno en ambos países es incierto. El debate ya no es si el petróleo es malo, sino quién lo controla mientras el litio llega a su madurez técnica. 
-
     
-
     Esta alianza redefine el mapa de influencias en América Latina, desplazando el foco de atención desde el Pacífico hacia el Atlántico Sur. Los mercados han reaccionado con una volatilidad controlada, pero la pregunta subyacente permanece: ¿Estamos ante un cambio real o un parche temporal ante la inestabilidad de Oriente Medio? La respuesta determinará el precio del transporte y la manufactura para la próxima década.`,
-
     bias: { objective: 94, factual: 98, emotional: 8 },
-
     poll: { 
-
       question: "¿Qué es más importante en 2026?", 
-
       questionEn: "What's more important in 2026?",
-
       options: ["Estabilidad Económica", "Pureza Ideológica", "Aceleración Renovable"] 
-
     },
-
     source: "Global Oil Report 2026 / Diplomatic Archives",
-
     color: "bg-amber-500",
-
     comments: [
-
       { id: 1, user: "Mateo Fernández", rep: 1250, text: "El realismo político siempre gana al final. No podemos cargar el coche con ética si no hay red eléctrica. 🔋", type: "pro" },
-
       { id: 2, user: "Valeria Rojas", rep: 890, text: "Parece una traición a los objetivos climáticos de 2030. ¿Dónde queda el New Green Deal? 🤔", type: "con" },
-
       { id: 3, user: "Lucas Silva", rep: 450, text: "Interesante ver cómo el petróleo pesado vuelve a ser sexy para EE.UU. Geopolítica 101.", type: "neu" },
-
       { id: 4, user: "Elena Méndez", rep: 2100, text: "Si esto baja la inflación, la Gen Z podrá independizarse. A veces el pragmatismo es necesario.", type: "pro" },
-
       { id: 5, user: "Diego Torres", rep: 150, text: "No me fío de los datos de exportación. Suena a maquillaje corporativo.", type: "con" },
-
       { id: 6, user: "Sofía Castro", rep: 3200, text: "La IA de INFOJOVEN tiene razón: es el fin de la confrontación moral.", type: "neu" },
-
       { id: 7, user: "Hugo Ruiz", rep: 95, text: "Venezuela tiene la llave. Increíble cómo cambia el cuento en dos años.", type: "pro" },
-
       { id: 8, user: "Camila Vega", rep: 560, text: "Mientras no afecte al precio del litio para mis gadgets, me vale.", type: "neu" },
-
       { id: 9, user: "Andrés Gil", rep: 1100, text: "Ecologismo vs Supervivencia. El gran debate de nuestra generación.", type: "con" },
-
       { id: 10, user: "Isabella Ortiz", rep: 45, text: "Prefiero pagar menos luz y debatir luego sobre ética.", type: "pro" },
-
       { id: 11, user: "Tomás Blanco", rep: 890, text: "La Superliga y esto... todo es dinero en 2026. 💸", type: "neu" },
-
       { id: 12, user: "Martina Paz", rep: 1300, text: "Faltan datos sobre el impacto en el Amazonas venezolano.", type: "con" },
-
       { id: 13, user: "Sebastián Luna", rep: 770, text: "Buen análisis. Muy directo.", type: "pro" },
-
       { id: 14, user: "Lucía Soler", rep: 210, text: "El ruido mediático nos tiene locos, gracias por limpiar la noticia.", type: "neu" },
-
       { id: 15, user: "Javier Montes", rep: 3400, text: "Esto es historia en directo. Gran artículo.", type: "pro" }
-
     ]
+  },
   {
     id: 2,
     category: "Cultura Pop",
@@ -265,6 +170,62 @@ const NEWS_DATA = [
       { id: 13, user: "Juanpe", rep: 30, text: "Yo mientras haya apuestas gratis me da igual.", type: "con" },
       { id: 14, user: "Mónica L.", rep: 1500, text: "Interesante el dato del 65%. Somos una generación de dopamina rápida.", type: "neu" },
       { id: 15, user: "Pere Mas", rep: 2100, text: "Fútbol popular o barbarie.", type: "con" }
+    ]
+  }
+];
+
+export default function Page() {
+  const [lang, setLang] = useState<'es' | 'en'>('es');
+  const [name, setName] = useState('');
+  const [isJoined, setIsJoined] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-white text-black font-sans">
+      {!isJoined ? (
+        <div className="max-w-md mx-auto pt-20 px-6 text-center">
+          <div className="bg-black text-white inline-block px-4 py-2 text-2xl font-black italic mb-8">IJ</div>
+          <h1 className="text-3xl font-bold mb-4">{TRANSLATIONS[lang].welcome}</h1>
+          <p className="text-gray-500 mb-8">{TRANSLATIONS[lang].onboarding}</p>
+          <input 
+            type="text" 
+            placeholder={TRANSLATIONS[lang].placeholderName}
+            className="w-full bg-gray-100 border-none rounded-2xl p-4 mb-4 focus:ring-2 focus:ring-black outline-none text-black"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <button 
+            className="w-full bg-black text-white font-bold py-4 rounded-2xl hover:bg-gray-800 transition-colors"
+            onClick={() => name.length > 2 && setIsJoined(true)}
+          >
+            Participar en el Debate
+          </button>
+        </div>
+      ) : (
+        <div className="max-w-4xl mx-auto p-8">
+          <header className="flex justify-between items-center mb-12 border-b pb-6">
+            <span className="font-black italic text-2xl uppercase tracking-tighter">INFOJOVEN</span>
+            <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="text-sm font-bold flex items-center gap-2 underline">
+              <Languages size={16} /> {lang.toUpperCase()}
+            </button>
+          </header>
+          {NEWS_DATA.map((news) => (
+            <article key={news.id} className="mb-20 border-b pb-12 last:border-0">
+              <span className={`inline-block px-3 py-1 rounded-full text-white text-[10px] font-bold uppercase mb-4 ${news.color}`}>
+                {lang === 'es' ? news.category : news.categoryEn}
+              </span>
+              <h2 className="text-5xl font-black mb-6 tracking-tighter uppercase leading-none">
+                {lang === 'es' ? news.title : news.titleEn}
+              </h2>
+              <div className="text-gray-800 leading-relaxed text-lg whitespace-pre-line mb-8 font-medium">
+                {news.content}
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
     ]
   },
   {
