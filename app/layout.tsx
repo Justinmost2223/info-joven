@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Info Joven",
-  description: "Portal de información juvenil",
+  title: "Infoxity | Portal de Información Juvenil",
+  description: "Portal Infoxity: Recursos, noticias y actualidad para jóvenes.",
   verification: {
     google: "x3KbelLkbbRYaFMTn_DqMqb6fFaVSKzBfhCuszyHh4E",
   },
