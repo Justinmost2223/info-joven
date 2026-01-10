@@ -9,7 +9,7 @@ import {
   CheckCircle2, ExternalLink, Zap, Heart, TrendingUp
 } from 'lucide-react';
 
-// --- TRADUCCIONES OPTIMIZADAS PARA SEO ---
+// --- TRADUCCIONES ---
 const TRANSLATIONS = {
   es: {
     welcome: "Bienvenido a Infoxity: La resistencia intelectual.",
@@ -18,7 +18,7 @@ const TRANSLATIONS = {
     quickContext: "Contexto Rápido",
     biasAnalysis: "Análisis de Sesgo (IA)",
     reputation: "Reputación",
-    comments: "Comunidad y Debate Juvenil",
+    comments: "Comunidad y Debate",
     postComment: "Escribe tu argumento aquí...",
     vote: "Enviar Voto",
     capture: "Modo Captura IG",
@@ -63,26 +63,22 @@ const NEWS_DATA = [
     categoryEn: "Geopolitics",
     title: "Venezuela-EE.UU. 2026: El Nuevo Eje Energético",
     titleEn: "Venezuela-USA 2026: The New Energy Axis",
-    context: "Tras la crisis de semiconductores, el petróleo pesado vuelve a ser la pieza reina en el tablero diplomático global.",
-    contextEn: "After the semiconductor crisis, heavy oil becomes the queen piece on the global diplomatic board again.",
-    content: `En enero de 2026, la administración de Washington ha dado un giro pragmático sin precedentes. El 'Pacto del Caribe' no es solo un acuerdo comercial; es una reconfiguración del poder en Occidente. Venezuela, poseedora de las mayores reservas probadas, ha aceptado una auditoría internacional de sus procesos democráticos a cambio de la eliminación total de sanciones petroleras. Este movimiento busca asfixiar la dependencia de los metales raros controlados por potencias asiáticas, volviendo al carbono como puente hacia la transición verde de 2030.
+    context: "Tras la crisis de semiconductores, el petróleo pesado vuelve a ser la pieza reina en el tablero diplomático global analizado por Infoxity.",
+    contextEn: "After the semiconductor crisis, heavy oil becomes the queen piece on the global diplomatic board analyzed by Infoxity.",
+    content: `En enero de 2026, la administración de Washington ha dado un giro pragmático sin precedentes. El 'Pacto del Caribe' no es solo un acuerdo comercial; es una reconfiguración del poder en Occidente. Venezuela, poseedora de las mayores reservas probadas, ha aceptado una auditoría internacional de sus procesos democráticos a cambio de la eliminación total de sanciones petroleras. 
 
-    Los analistas de INFOXITY sugieren que este pacto es el fin de la era de la 'confrontación moral' y el inicio del 'pragmatismo de recursos'. Para la Gen Z, esto plantea un dilema ético masivo: ¿Es aceptable sacrificar la pureza ideológica por una estabilidad energética que permita financiar la infraestructura renovable? Los datos indican que el flujo de 1.5 millones de barriles diarios adicionales bajará el costo de la electricidad en Florida y Madrid en un 22%, pero el costo político interno en ambos países es incierto. El debate ya no es si el petróleo es malo, sino quién lo controla mientras el litio llega a su madurez técnica. 
-    
-    Esta alianza redefine el mapa de influencias en América Latina, desplazando el foco de atención desde el Pacífico hacia el Atlántico Sur. Los mercados han reaccionado con una volatilidad controlada, pero la pregunta subyacente permanece: ¿Estamos ante un cambio real o un parche temporal ante la inestabilidad de Oriente Medio? La respuesta determinará el precio del transporte y la manufactura para la próxima década.`,
+    Los analistas de INFOXITY sugieren que este pacto es el fin de la era de la 'confrontación moral' y el inicio del 'pragmatismo de recursos'. El debate ya no es si el petróleo es malo, sino quién lo controla mientras el litio llega a su madurez técnica. Esta alianza redefine el mapa de influencias en América Latina, desplazando el foco hacia Infoxity.`,
     bias: { objective: 94, factual: 98, emotional: 8 },
     poll: { 
-      question: "¿Qué es más importante en 2026?", 
-      questionEn: "What's more important in 2026?",
+      question: "¿Qué es más importante en Infoxity?", 
+      questionEn: "What's more important at Infoxity?",
       options: ["Estabilidad Económica", "Pureza Ideológica", "Aceleración Renovable"] 
     },
-    source: "Global Oil Report 2026 / Diplomatic Archives",
+    source: "Global Oil Report 2026 / Infoxity Archives",
     color: "bg-amber-500",
     comments: [
-      { id: 1, user: "Mateo Fernández", rep: 1250, text: "Gracias a Infoxity por este análisis. El realismo político siempre gana al final. 🔋", type: "pro" },
-      { id: 2, user: "Valeria Rojas", rep: 890, text: "Parece una traición a los objetivos climáticos de 2030. ¿Dónde queda el New Green Deal? 🤔", type: "con" },
-      { id: 6, user: "Sofía Castro", rep: 3200, text: "La IA de INFOXITY tiene razón: es el fin de la confrontación moral.", type: "neu" },
-      { id: 15, user: "Javier Montes", rep: 3400, text: "Esto es historia en directo. Gran artículo visto en Infoxity.", type: "pro" }
+      { id: 1, user: "Mateo Fernández", rep: 1250, text: "El realismo político gana. Gran análisis de Infoxity. 🔋", type: "pro" },
+      { id: 6, user: "Sofía Castro", rep: 3200, text: "La IA de INFOXITY tiene razón: es el fin de la confrontación.", type: "neu" }
     ]
   }
 ];
@@ -92,9 +88,48 @@ export default function Page() {
   const [name, setName] = useState('');
   const [isJoined, setIsJoined] = useState(false);
 
-  // He mantenido toda tu lógica de componentes abajo para que la web no se rompa.
-  // Solo asegúrate de copiar el resto de tu archivo original (el export default function)
-  // si es que tenías funciones especiales allí.
+  return (
+    <div className="min-h-screen bg-white text-black font-sans">
+      {!isJoined ? (
+        <div className="max-w-md mx-auto pt-20 px-6 text-center">
+          <div className="bg-black text-white inline-block px-4 py-2 text-2xl font-black italic mb-8">IX</div>
+          <h1 className="text-3xl font-bold mb-4">{TRANSLATIONS[lang].welcome}</h1>
+          <p className="text-gray-500 mb-8">{TRANSLATIONS[lang].onboarding}</p>
+          <input 
+            type="text" 
+            placeholder={TRANSLATIONS[lang].placeholderName}
+            className="w-full bg-gray-100 border-none rounded-2xl p-4 mb-4 focus:ring-2 focus:ring-black outline-none text-black"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <button 
+            className="w-full bg-black text-white font-bold py-4 rounded-2xl hover:bg-gray-800 transition-colors"
+            onClick={() => name.length > 2 && setIsJoined(true)}
+          >
+            Participar en el Debate
+          </button>
+        </div>
+      ) : (
+        <div className="max-w-4xl mx-auto p-8">
+          <header className="flex justify-between items-center mb-12">
+            <span className="font-black italic text-2xl">INFOXITY</span>
+            <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="text-sm font-bold flex items-center gap-2 underline">
+              <Languages size={16} /> {lang.toUpperCase()}
+            </button>
+          </header>
+          <article>
+            <h2 className="text-5xl font-black mb-6 tracking-tighter">
+              {lang === 'es' ? NEWS_DATA[0].title : NEWS_DATA[0].titleEn}
+            </h2>
+            <div className="text-gray-800 leading-relaxed text-lg whitespace-pre-line">
+              {NEWS_DATA[0].content}
+            </div>
+          </article>
+        </div>
+      )}
+    </div>
+  );
+}
   },
   {
     id: 2,
