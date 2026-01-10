@@ -12,11 +12,10 @@ import {
 
 /**
  * PROJECT: INFOXITY — THE GEN Z NEWS HUB
- * SEO Level: Optimized
- * Compliance: Zero Errors / React Stable
+ * Status: SEO & JSON-LD Integrated
  */
 
-// --- 1. DICCIONARIO DE TEXTOS (SEO FRIENDLY) ---
+// --- 1. DICCIONARIO DE TEXTOS ---
 const TRANSLATIONS = {
   es: {
     siteName: "Infoxity",
@@ -170,7 +169,20 @@ export default function InfoxityApp() {
 
   const t = TRANSLATIONS[lang];
 
-  // Vista de Onboarding (SEO: Sin contenido oculto)
+  // --- BLOQUE DE SEO TÉCNICO (JSON-LD) ---
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsMediaOrganization",
+    "name": "Infoxity",
+    "url": "https://justinmost2223.github.io/info-joven/",
+    "logo": "https://justinmost2223.github.io/info-joven/logo.png",
+    "sameAs": [
+      "https://twitter.com/infoxity",
+      "https://instagram.com/infoxity"
+    ],
+    "knowsAbout": ["Gen Z News", "AI Analysis", "Geopolitics"]
+  };
+
   if (!user) {
     return (
       <main className="fixed inset-0 bg-[#FBFBFB] z-[100] flex items-center justify-center p-6">
@@ -202,6 +214,12 @@ export default function InfoxityApp() {
   return (
     <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white pb-20">
       
+      {/* INYECCIÓN DE DATOS ESTRUCTURADOS PARA GOOGLE */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* HEADER SEMÁNTICO (SEO) */}
       <header className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-50 z-50 px-6 md:px-12 py-5 flex justify-between items-center">
         <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setSelectedNews(null)}>
