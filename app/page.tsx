@@ -5,395 +5,443 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Shield, MessageSquare, ChevronRight, BarChart3, 
   Instagram, Languages, Award, Bookmark, 
-  BookmarkCheck, ArrowLeft, Send, Zap, 
-  Info, Share2, Check, User, Search,
-  TrendingUp, Bell, Hash
+  BookmarkCheck, CheckCircle2, ArrowLeft, Mic2, 
+  TrendingUp, Scale, Star, Menu, X, Share2
 } from 'lucide-react';
 
-// --- DICCIONARIO MAESTRO ---
+// --- SISTEMA DE IDIOMAS ---
 const TRANSLATIONS = {
   es: {
-    siteName: "Infoxity | Resistencia Intelectual",
-    tagline: "Noticias Objetivas y Debate Crítico",
-    welcome: "Bienvenido a la Resistencia.",
-    onboarding: "Introduce tu identidad para acceder al análisis sin ruido mediático.",
-    reading: "mentes conectadas",
+    siteName: "Infoxity",
+    tagline: "Resistencia Intelectual",
+    welcome: "Bienvenido a Infoxity.",
+    onboarding: "Limpiamos el ruido mediático. Introduce tu identidad para el debate.",
+    reading: "leyendo ahora",
     quickContext: "Contexto Crítico",
-    biasAnalysis: "Auditoría de IA (Neutralidad)",
-    reputation: "puntos de reputación",
-    comments: "Foro de Argumentación",
+    biasAnalysis: "Auditoría de IA",
+    reputation: "puntos",
+    comments: "Foro de Debate",
+    postComment: "Escribe tu argumento basado en datos...",
+    capture: "Modo Captura IG",
     identityTitle: "¿Por qué Infoxity?",
-    identityBody: "En un mundo de clips de 10 segundos, elegimos la profundidad. Somos un híbrido de IA y editores humanos filtrando el sesgo político para entregarte la verdad cruda.",
-    back: "Volver al inicio",
-    featured: "ANÁLISIS DESTACADO",
-    actionButton: "Entrar al Sistema",
-    placeholder: "Tu nombre o alias...",
-    popular: "Tendencias de Debate",
-    library: "Mi Biblioteca",
-    noSaved: "Aún no has guardado análisis en tu biblioteca.",
-    saved: "Guardado",
-    save: "Guardar",
-    whatsapp: "WhatsApp",
-    share: "Compartir",
-    biasLabels: ["Objetividad", "Datos Verificables", "Neutralidad Tonal"],
-    postComment: "Publicar argumento"
+    identityBody: "Somos un equipo híbrido de IA y humanos que limpian el ruido mediático para ofrecer noticias objetivas, largas y analíticas, diseñadas para que los jóvenes cultos debatan con respeto.",
+    back: "Volver",
+    featured: "DESTACADA",
+    sources: "Fuentes Verificadas",
+    actionButton: "Unirse a la Resistencia",
+    publish: "Publicar",
+    myLibrary: "Mi Biblioteca",
+    noSaved: "No tienes noticias guardadas.",
+    voteThanks: "Voto registrado con éxito",
+    placeholder: "Nombre y Apellido...",
+    popular: "Más Destacadas"
   },
   en: {
-    siteName: "Infoxity | Intellectual Resistance",
-    tagline: "Objective News & Critical Debate",
-    welcome: "Welcome to the Resistance.",
-    onboarding: "Enter your identity to access noise-free analysis.",
-    reading: "minds connected",
+    siteName: "Infoxity",
+    tagline: "Intellectual Resistance",
+    welcome: "Welcome to Infoxity.",
+    onboarding: "We clear media noise. Enter your identity to join the debate.",
+    reading: "reading now",
     quickContext: "Critical Context",
-    biasAnalysis: "AI Bias Audit",
-    reputation: "reputation points",
-    comments: "Argumentation Forum",
+    biasAnalysis: "AI Audit",
+    reputation: "points",
+    comments: "Debate Forum",
+    postComment: "Write your fact-based argument...",
+    capture: "IG Capture Mode",
     identityTitle: "Why Infoxity?",
-    identityBody: "In a world of 10-second clips, we choose depth. We are an AI-human hybrid filtering political bias to deliver the raw truth.",
-    back: "Back to home",
-    featured: "FEATURED ANALYSIS",
-    actionButton: "Enter System",
-    placeholder: "Name or alias...",
-    popular: "Trending Debates",
-    library: "My Library",
-    noSaved: "No saved analysis in your library yet.",
-    saved: "Saved",
-    save: "Save",
-    whatsapp: "WhatsApp",
-    share: "Share",
-    biasLabels: ["Objectivity", "Verifiable Data", "Tonal Neutrality"],
-    postComment: "Post argument"
+    identityBody: "We are a hybrid team of AI and humans cleaning media noise to offer objective, long-form analytical news, designed for educated youth to debate with respect.",
+    back: "Back",
+    featured: "FEATURED",
+    sources: "Verified Sources",
+    actionButton: "Join the Resistance",
+    publish: "Publish",
+    myLibrary: "My Library",
+    noSaved: "No saved stories yet.",
+    voteThanks: "Vote registered successfully",
+    placeholder: "Full Name...",
+    popular: "Trending Now"
   }
 };
 
-const NEWS_DATA = [
+// --- DATA ESTRUCTURADA ---
+const INITIAL_NEWS = [
   {
     id: 1,
-    cat: "Geopolítica",
-    title: "Venezuela 2026: El Nuevo Eje Energético Global",
-    context: "El acuerdo secreto entre Washington y Caracas para alimentar las granjas de servidores de IA.",
-    content: "En enero de 2026, la diplomacia energética ha dado un giro inesperado. Ante el consumo masivo de electricidad de los nuevos modelos de AGI, Estados Unidos ha firmado el 'Pacto del Caribe' con Venezuela. Este movimiento redefine no solo el mapa energético de Latinoamérica, sino que coloca a Caracas en una posición de poder inédita frente a Silicon Valley.",
-    bias: [95, 92, 88],
-    poll: { 
-      q: "¿Es ético priorizar la IA sobre las sanciones?", 
-      opts: ["Pragmatismo necesario", "Error histórico", "Neutral"], 
-      votes: [540, 210, 95] 
-    },
+    cat: "Geopolítica", catEn: "Geopolitics",
+    title: "Venezuela 2026: El Nuevo Eje Energético Global", titleEn: "Venezuela 2026: The New Global Energy Axis",
+    context: "El acuerdo secreto entre Washington y Caracas para alimentar las granjas de servidores de IA en EE.UU.",
+    content: "En enero de 2026, la diplomacia energética ha dado un giro inesperado. Ante el consumo masivo de electricidad de los nuevos modelos de Inteligencia Artificial General (AGI), Estados Unidos ha firmado el 'Pacto del Caribe' con Venezuela. Este acuerdo no solo implica el levantamiento de sanciones, sino la inversión masiva en infraestructura venezolana a cambio de crudo pesado destinado exclusivamente a la generación eléctrica de centros de datos en Texas y Florida.\n\nEl análisis de Infoxity revela que este movimiento estabiliza la economía regional pero genera una nueva dependencia tecnológica. Mientras el mundo miraba hacia las renovables, la urgencia de la computación ha devuelto el poder a las reservas fósiles más grandes del mundo.",
+    bias: [95, 92, 10], // Objetividad, Hechos, Emoción
+    poll: { q: "¿Es ético priorizar la IA sobre las sanciones?", opts: ["Pragmatismo necesario", "Error histórico", "Neutral"], votes: [540, 210, 95] },
+    sources: ["OPEP+ Energy Report", "Digital Geopolitics Journal"],
     color: "bg-orange-600",
-    comments: [
-        { id: 1, user: "Mateo Fernández", rep: 1250, text: "La energía manda, las ideologías solo adornan. 🔋" },
-        { id: 2, user: "Elena Smith", rep: 890, text: "Interesante ver cómo la IA fuerza alianzas imposibles." }
-    ]
+    comments: [{ id: 1, user: "Mateo Fernández", rep: 1250, text: "La energía manda, las ideologías solo adornan. 🔋" }]
   },
   {
     id: 2,
-    cat: "Cultura",
-    title: "El Fin del Binge-Watching masivo",
-    context: "Netflix y HBO regresan al modelo semanal para salvar la conversación social.",
-    content: "El estreno de las grandes sagas de 2026 marca oficialmente el funeral del maratón. Las plataformas han detectado que el consumo instantáneo destruye el valor publicitario y la retención cultural de sus marcas.",
-    bias: [88, 94, 91],
-    poll: { q: "¿Prefieres esperar o verlo todo ya?", opts: ["Esperar (Crea Hype)", "Todo de golpe"], votes: [800, 410] },
+    cat: "Cultura", catEn: "Culture",
+    title: "Stranger Things 5 y el Fin del Binge-Watching", titleEn: "Stranger Things 5 and the End of Binge-Watching",
+    context: "Netflix abandona el modelo de 'todo de golpe' para salvar su relevancia cultural.",
+    content: "El estreno de la última temporada de Stranger Things en 2026 marca oficialmente el funeral del maratón de series. Netflix ha anunciado que los episodios se lanzarán quincenalmente, acompañados de eventos en vivo en Realidad Virtual.\n\nEl análisis de Infoxity indica que el modelo de 'atracón' destruía la conversación social en menos de 48 horas. Ahora, la industria busca la 'escasez artificial'. Al dilatar el estreno, el valor publicitario de la serie ha subido un 300%. Los jóvenes ya no quieren consumir contenido solos; quieren la validación del debate grupal.",
+    bias: [88, 94, 25],
+    poll: { q: "¿Prefieres esperar o verlo todo ya?", opts: ["Esperar (Crea hype)", "Todo ya", "Indiferente"], votes: [890, 410, 120] },
+    sources: ["Streaming Analytics 2026", "Variety Insights"],
     color: "bg-purple-600",
-    comments: [{ id: 3, user: "Cinefilo26", rep: 400, text: "Extrañaba las teorías semanales." }]
+    comments: [{ id: 3, user: "Carlos Ruiz", rep: 560, text: "Por fin podré hablar de la serie sin spoilers el primer día. 🙌" }]
+  },
+  {
+    id: 3,
+    cat: "Política", catEn: "Politics",
+    title: "Gen Z: El Fin de la Izquierda y la Derecha", titleEn: "Gen Z: The End of Left and Right",
+    context: "El 70% de los jóvenes votantes en 2026 se declaran 'Pragmáticos Radicales'.",
+    content: "Las etiquetas políticas tradicionales han colapsado. Un estudio profundo realizado por el equipo de Infoxity muestra que la Generación Z ya no vota por bloques ideológicos, sino por 'paquetes de soluciones'. Un joven puede defender el mercado libre de criptoactivos y al mismo tiempo exigir la nacionalización de la vivienda.\n\nEste fenómeno, denominado 'Ideología Líquida', está dejando a los partidos tradicionales sin discurso. En 2026, la competencia política se basa en la eficiencia técnica y la transparencia algorítmica. La política ha pasado de ser una religión a ser una herramienta de gestión.",
+    bias: [98, 96, 5],
+    poll: { q: "¿Te sientes representado por algún partido?", opts: ["Ninguno", "Por ideas sueltas", "Sí, soy fiel"], votes: [1500, 600, 150] },
+    sources: ["Pew Research Center 2026", "Infoxity Data Hub"],
+    color: "bg-emerald-600",
+    comments: [{ id: 4, user: "Lucía Méndez", rep: 2100, text: "La eficiencia no tiene color político. Queremos que funcione." }]
   }
 ];
 
-export default function InfoxityFullApp() {
-  const [user, setUser] = useState(null);
+export default function InfoxityApp() {
+  const [user, setUser] = useState<{name: string, rep: number} | null>(null);
   const [nameInput, setNameInput] = useState("");
-  const [lang, setLang] = useState('es');
-  const [selected, setSelected] = useState(null);
-  const [savedIds, setSavedIds] = useState([]);
-  const [votedPolls, setVotedPolls] = useState([]);
+  const [lang, setLang] = useState<'es' | 'en'>('es');
+  const [news, setNews] = useState(INITIAL_NEWS);
+  const [selected, setSelected] = useState<any>(null);
+  const [savedIds, setSavedIds] = useState<number[]>([]);
+  const [votedPolls, setVotedPolls] = useState<number[]>([]);
   const [isCapturing, setIsCapturing] = useState(false);
-  const [showLibrary, setShowLibrary] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const [readers, setReaders] = useState(4520);
 
   const t = TRANSLATIONS[lang];
 
-  // --- SEO DINÁMICO ---
   useEffect(() => {
-    document.title = selected ? `${selected.title} | Infoxity` : t.siteName;
-  }, [selected, t.siteName]);
+    const interval = setInterval(() => setReaders(p => p + (Math.floor(Math.random()*21)-10)), 3000);
+    return () => clearInterval(interval);
+  }, []);
 
-  const shareWhatsApp = (item) => {
-    const text = encodeURIComponent(`📢 *${item.title}*\nAnálisis profundo en Infoxity 2026.\n👉 https://infoxity.com`);
-    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+  const toggleSave = (id: number) => {
+    setSavedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
-  const copyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleVote = (newsId: number, optIndex: number) => {
+    if (votedPolls.includes(newsId)) return;
+    const updatedNews = news.map(n => {
+      if (n.id === newsId) {
+        const newVotes = [...n.poll.votes];
+        newVotes[optIndex] += 1;
+        return { ...n, poll: { ...n.poll, votes: newVotes } };
+      }
+      return n;
+    });
+    setNews(updatedNews);
+    setVotedPolls([...votedPolls, newsId]);
   };
 
-  // --- VISTA ONBOARDING ---
+  const savedNews = useMemo(() => news.filter(n => savedIds.includes(n.id)), [news, savedIds]);
+
   if (!user) {
     return (
-      <main className="fixed inset-0 bg-white flex items-center justify-center p-6 z-[999]">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full text-center">
-          <div className="bg-black text-white inline-block px-8 py-2 font-black text-4xl italic mb-10 shadow-2xl">IX</div>
-          <h1 className="text-3xl font-black mb-4 uppercase tracking-tighter">{t.welcome}</h1>
-          <p className="text-gray-400 mb-10 font-medium leading-relaxed">{t.onboarding}</p>
-          <div className="space-y-4">
-            <input 
-              type="text" placeholder={t.placeholder} 
-              className="w-full p-6 rounded-[2rem] bg-gray-100 border-none font-bold text-center outline-none ring-2 ring-transparent focus:ring-black transition-all"
-              onChange={(e) => setNameInput(e.target.value)}
-            />
-            <button 
-              onClick={() => nameInput && setUser({ name: nameInput, rep: 100 })}
-              className="w-full bg-black text-white p-6 rounded-[2rem] font-black uppercase tracking-widest hover:scale-[0.98] transition-transform shadow-xl"
-            >
-              {t.actionButton}
-            </button>
-          </div>
+      <main className="fixed inset-0 bg-gray-50 z-[100] flex items-center justify-center p-4">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="max-w-md w-full p-8 md:p-12 rounded-[3rem] shadow-2xl border border-gray-100 text-center bg-white">
+          <div className="bg-black text-white inline-block px-6 py-1 font-black text-3xl italic mb-6">IX</div>
+          <h1 className="text-2xl font-black mb-4">{t.welcome}</h1>
+          <p className="text-gray-400 text-sm mb-8 leading-relaxed">{t.onboarding}</p>
+          <input 
+            type="text" placeholder={t.placeholder} 
+            className="w-full p-5 rounded-2xl bg-gray-50 border border-gray-100 mb-4 font-bold text-center outline-none focus:ring-2 ring-black transition-all"
+            onChange={(e) => setNameInput(e.target.value)}
+          />
+          <button 
+            onClick={() => nameInput && setUser({ name: nameInput, rep: 100 })}
+            className="w-full bg-black text-white p-5 rounded-2xl font-black uppercase tracking-widest hover:bg-gray-800 active:scale-95 transition-all"
+          >
+            {t.actionButton}
+          </button>
         </motion.div>
       </main>
     );
   }
 
   return (
-    <div className={`min-h-screen transition-all duration-700 ${isCapturing ? 'bg-black p-4' : 'bg-white'}`}>
+    <div className={`min-h-screen transition-all duration-700 ${isCapturing ? 'bg-black' : 'bg-white'}`}>
       
-      {/* NAVEGACIÓN PRINCIPAL */}
+      {/* HEADER PROFESIONAL */}
       {!isCapturing && (
-        <header className="fixed top-0 left-0 w-full bg-white/80 backdrop-blur-2xl z-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-          <div className="flex items-center gap-4 cursor-pointer" onClick={() => {setSelected(null); setShowLibrary(false);}}>
-            <div className="bg-black text-white px-3 py-0.5 font-black text-2xl italic">IX</div>
-            <div className="hidden lg:block">
-              <p className="font-black text-[10px] tracking-[0.3em] uppercase">Infoxity</p>
-              <p className="text-[8px] font-bold text-gray-400 uppercase italic">Resistance 2026</p>
-            </div>
+        <header className="fixed top-0 left-0 w-full bg-white/80 backdrop-blur-xl z-50 px-4 md:px-12 py-4 border-b border-gray-50 flex justify-between items-center">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setSelected(null)}>
+            <div className="bg-black text-white px-3 py-0.5 font-black text-xl italic">IX</div>
+            <span className="font-black text-[10px] uppercase tracking-[0.3em] hidden sm:block">{t.siteName}</span>
           </div>
-
-          <div className="flex items-center gap-2 md:gap-5">
-            <button onClick={() => setShowLibrary(!showLibrary)} className={`p-3 rounded-full transition-all ${showLibrary ? 'bg-black text-white' : 'bg-gray-50'}`}>
-              <Bookmark size={20} />
-            </button>
-            <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="px-4 py-2 border-2 border-gray-100 rounded-2xl font-black text-[10px] flex items-center gap-2 hover:bg-black hover:text-white transition-all">
-              <Languages size={16} /> {lang.toUpperCase()}
-            </button>
-            <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-full border border-gray-100">
-               <User size={14} className="text-gray-400" />
-               <span className="text-[10px] font-black uppercase">{user.name}</span>
-               <span className="text-[10px] font-black text-amber-500">+{user.rep}</span>
+          <div className="flex items-center gap-3 md:gap-6">
+            <div className="bg-gray-50 px-3 md:px-4 py-2 rounded-full border border-gray-100 flex items-center gap-2">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-tighter">
+                {readers.toLocaleString()} {t.reading}
+              </span>
             </div>
+            <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="p-2 hover:bg-black hover:text-white rounded-xl transition-all border border-gray-100">
+              <Languages size={18} />
+            </button>
           </div>
         </header>
       )}
 
-      <main className={`max-w-7xl mx-auto px-6 ${isCapturing ? '' : 'pt-28 pb-20'}`}>
+      <main className={`max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 ${isCapturing ? 'pt-10' : 'pt-24 md:pt-32 pb-20'}`}>
         <AnimatePresence mode="wait">
-          
-          {/* VISTA: BIBLIOTECA */}
-          {showLibrary ? (
-            <motion.div key="lib" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-10">
-              <h2 className="text-5xl font-black italic tracking-tighter uppercase">{t.library}</h2>
-              {savedIds.length === 0 ? (
-                <div className="py-32 text-center border-4 border-dashed border-gray-100 rounded-[4rem]">
-                  <Bookmark size={60} className="mx-auto text-gray-100 mb-6" />
-                  <p className="text-gray-400 font-bold uppercase tracking-widest">{t.noSaved}</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {NEWS_DATA.filter(n => savedIds.includes(n.id)).map(n => (
-                    <div key={n.id} className="p-10 bg-gray-50 rounded-[3rem] border border-gray-100">
-                      <span className="text-[10px] font-black uppercase text-gray-400 block mb-4">{n.cat}</span>
-                      <h4 className="text-2xl font-black mb-8 leading-tight">{n.title}</h4>
-                      <button onClick={() => {setSelected(n); setShowLibrary(false);}} className="w-full py-4 bg-white rounded-2xl font-black text-[10px] uppercase shadow-sm flex items-center justify-center gap-2"> Leer Análisis <ChevronRight size={14}/></button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </motion.div>
-          ) : !selected ? (
-            /* VISTA: FEED PRINCIPAL (HOME) */
-            <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-16">
+          {!selected ? (
+            <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-16">
               
-              {/* HERO: POR QUÉ INFOXITY */}
-              <section className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                <div className="lg:col-span-8 bg-black text-white p-12 md:p-20 rounded-[4rem] relative overflow-hidden flex flex-col justify-end min-h-[600px] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
-                  <div className="absolute top-0 right-0 p-12 text-white/5 rotate-12"><Shield size={450} /></div>
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-3 mb-8">
-                      <span className="bg-amber-500 text-black px-4 py-1 font-black text-[10px] uppercase rounded-full">{t.featured}</span>
-                      <div className="flex -space-x-2">
-                        {[1,2,3].map(i => <div key={i} className="w-8 h-8 rounded-full border-2 border-black bg-gray-800 flex items-center justify-center text-[8px] font-black">AI</div>)}
+              {/* SECCIÓN BIBLIOTECA (SÓLO SI HAY GUARDADOS) */}
+              {savedNews.length > 0 && (
+                <section>
+                  <h3 className="text-[10px] font-black tracking-[0.4em] text-gray-400 uppercase mb-6 flex items-center gap-2">
+                    <Star size={12} className="text-amber-500" /> {t.myLibrary}
+                  </h3>
+                  <div className="flex gap-4 overflow-x-auto pb-6 no-scrollbar">
+                    {savedNews.map(n => (
+                      <div 
+                        key={n.id} onClick={() => setSelected(n)}
+                        className="min-w-[280px] bg-gray-50 p-6 rounded-[2.5rem] border border-gray-100 cursor-pointer hover:bg-white hover:shadow-xl transition-all"
+                      >
+                        <span className="text-[8px] font-black uppercase text-gray-400 mb-2 block">{lang === 'es' ? n.cat : n.catEn}</span>
+                        <h4 className="font-black text-sm leading-tight">{lang === 'es' ? n.title : n.titleEn}</h4>
                       </div>
-                    </div>
-                    <h2 className="text-6xl md:text-9xl font-black italic mb-10 leading-[0.8] tracking-tighter">{t.identityTitle}</h2>
-                    <p className="text-gray-400 text-xl md:text-2xl font-light max-w-2xl leading-relaxed italic border-l-4 border-amber-500 pl-8">{t.identityBody}</p>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* NOTICIA DESTACADA: ¿POR QUÉ INFOXITY? */}
+              <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="lg:col-span-8 bg-black text-white p-10 md:p-16 rounded-[3.5rem] relative overflow-hidden flex flex-col justify-end min-h-[450px] shadow-2xl">
+                  <div className="absolute top-8 right-8 text-white/10 rotate-12"><Shield size={250} /></div>
+                  <div className="relative z-10">
+                    <span className="text-amber-400 font-black text-[10px] tracking-[0.4em] mb-4 block uppercase">{t.featured}</span>
+                    <h2 className="text-4xl md:text-7xl font-black italic tracking-tighter mb-6 leading-[0.9]">{t.identityTitle}</h2>
+                    <p className="text-gray-400 text-lg md:text-xl font-light max-w-2xl leading-relaxed">{t.identityBody}</p>
                   </div>
                 </div>
 
-                {/* TENDENCIAS */}
-                <div className="lg:col-span-4 flex flex-col justify-center space-y-12">
-                   <h3 className="text-[12px] font-black uppercase tracking-[0.4em] text-gray-300 flex items-center gap-4"><TrendingUp size={18}/> {t.popular}</h3>
-                   <div className="space-y-10">
-                     {NEWS_DATA.map((n, i) => (
-                       <div key={n.id} onClick={() => setSelected(n)} className="group cursor-pointer flex gap-6 items-start">
-                          <span className="text-6xl font-black text-gray-100 italic leading-none group-hover:text-black transition-colors">0{i+1}</span>
-                          <div>
-                            <h4 className="font-black text-xl leading-tight mb-2 group-hover:text-blue-600 transition-all">{n.title}</h4>
-                            <div className="flex gap-3">
-                              <span className="text-[10px] font-black uppercase text-gray-400">{n.cat}</span>
-                              <span className="text-[10px] font-black text-amber-500 flex items-center gap-1"><MessageSquare size={10}/> {n.comments.length}</span>
-                            </div>
-                          </div>
-                       </div>
-                     ))}
-                   </div>
+                {/* TENDENCIAS LATERALES */}
+                <div className="lg:col-span-4 flex flex-col justify-center px-2">
+                  <h3 className="text-[10px] font-black tracking-[0.4em] text-gray-300 uppercase mb-8">{t.popular}</h3>
+                  <div className="space-y-8">
+                    {news.map((n, i) => (
+                      <div key={n.id} onClick={() => { setSelected(n); window.scrollTo(0,0); }} className="group cursor-pointer flex gap-5 items-start">
+                        <span className="font-black text-gray-100 text-5xl leading-none">0{i+1}</span>
+                        <div>
+                          <h4 className="font-black text-lg leading-tight group-hover:text-blue-600 transition-colors">{lang === 'es' ? n.title : n.titleEn}</h4>
+                          <span className="text-[9px] font-black uppercase text-gray-400">{lang === 'es' ? n.cat : n.catEn}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </section>
 
-              {/* GRID DE NOTICIAS SECUNDARIO */}
-              <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                {NEWS_DATA.map(n => (
-                  <article key={n.id} className="bg-white p-12 rounded-[4rem] border border-gray-100 shadow-sm hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.1)] transition-all flex flex-col justify-between min-h-[520px] group">
+              {/* GRID PRINCIPAL */}
+              <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {news.map(n => (
+                  <motion.div 
+                    key={n.id} whileHover={{ y: -8 }}
+                    className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm hover:shadow-2xl transition-all flex flex-col justify-between min-h-[420px]"
+                  >
                     <div className="cursor-pointer" onClick={() => setSelected(n)}>
-                      <div className="flex justify-between items-start mb-8">
-                        <span className={`px-5 py-1.5 rounded-full text-[10px] font-black uppercase text-white ${n.color} shadow-lg`}>{n.cat}</span>
-                        <Zap size={20} className="text-gray-100 group-hover:text-amber-400 transition-colors" />
-                      </div>
-                      <h3 className="text-3xl font-black mb-6 leading-tight group-hover:tracking-tight transition-all">{n.title}</h3>
-                      <p className="text-gray-400 text-base italic leading-relaxed line-clamp-4 font-medium">"{n.context}"</p>
+                      <span className={`px-4 py-1 rounded-full text-[9px] font-black uppercase text-white ${n.color} mb-6 inline-block shadow-lg shadow-black/5`}>{lang === 'es' ? n.cat : n.catEn}</span>
+                      <h3 className="text-2xl font-black leading-tight mb-4 group-hover:underline">{lang === 'es' ? n.title : n.titleEn}</h3>
+                      <p className="text-gray-400 text-sm italic font-medium">"{n.context}"</p>
                     </div>
-                    <div className="flex justify-between items-center pt-8 border-t border-gray-50 mt-10">
-                      <button onClick={() => {
-                        setSavedIds(prev => prev.includes(n.id) ? prev.filter(i => i !== n.id) : [...prev, n.id]);
-                      }} className="flex items-center gap-3">
-                        {savedIds.includes(n.id) ? <BookmarkCheck className="text-blue-600" size={24}/> : <Bookmark size={24} className="text-gray-200 group-hover:text-black transition-colors"/>}
-                        <span className="text-[11px] font-black uppercase text-gray-400">{savedIds.includes(n.id) ? t.saved : t.save}</span>
+                    <div className="flex justify-between items-center pt-6 border-t border-gray-50 mt-8">
+                      <button onClick={() => toggleSave(n.id)} className="p-2 transition-all active:scale-125">
+                        {savedIds.includes(n.id) ? <BookmarkCheck className="text-black" size={22} /> : <Bookmark className="text-gray-200 hover:text-black" size={22} />}
                       </button>
-                      <button onClick={() => setSelected(n)} className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-inner"><ChevronRight size={28}/></button>
+                      <button onClick={() => setSelected(n)} className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-all"><ChevronRight size={18}/></button>
                     </div>
-                  </article>
+                  </motion.div>
                 ))}
               </section>
             </motion.div>
           ) : (
-            /* VISTA: DETALLE DEL ANÁLISIS (ARTÍCULO) */
-            <motion.article key="article" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} 
-              className={`max-w-4xl mx-auto ${isCapturing ? 'bg-white p-12 rounded-[5rem] border-[20px] border-black shadow-2xl mt-10' : 'pb-32'}`}
+            <motion.article 
+              key="article" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              className={`max-w-4xl mx-auto ${isCapturing ? 'bg-white p-8 md:p-16 rounded-[4rem] border-[12px] border-black mt-4' : 'pb-20'}`}
             >
-              <div className="flex justify-between items-center mb-16">
-                <button onClick={() => setSelected(null)} className="flex items-center gap-3 text-[12px] font-black uppercase text-gray-400 hover:text-black transition-colors">
-                  <ArrowLeft size={20}/> {t.back}
-                </button>
-                <div className="flex gap-4">
-                  <button onClick={() => shareWhatsApp(selected)} className="hidden sm:flex items-center gap-2 px-6 py-3 bg-green-50 text-green-700 rounded-full font-black text-[11px] uppercase hover:bg-green-600 hover:text-white transition-all">
-                    <Send size={18}/> {t.whatsapp}
+              {/* BOTONES DE ACCIÓN ARRIBA */}
+              {!isCapturing && (
+                <div className="flex justify-between items-center mb-8">
+                  <button onClick={() => setSelected(null)} className="flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 hover:text-black">
+                    <ArrowLeft size={16}/> {t.back}
                   </button>
-                  <button onClick={copyLink} className="p-4 bg-gray-50 rounded-full hover:bg-black hover:text-white transition-all">
-                    {copied ? <Check size={22} className="text-green-500" /> : <Share2 size={22} />}
-                  </button>
-                  <button onClick={() => setIsCapturing(!isCapturing)} className={`p-4 rounded-full transition-all ${isCapturing ? 'bg-black text-white' : 'bg-gray-100 hover:bg-black hover:text-white'}`}>
-                    <Instagram size={22}/>
-                  </button>
+                  <div className="flex gap-4">
+                    <button onClick={() => toggleSave(selected.id)} className="text-black transition-transform active:scale-125">
+                      {savedIds.includes(selected.id) ? <BookmarkCheck size={26} /> : <Bookmark size={26} className="text-gray-300" />}
+                    </button>
+                    <button onClick={() => setIsCapturing(true)} className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-full text-[10px] font-black uppercase">
+                      <Instagram size={16}/> {t.capture}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <header className="mb-20">
-                <span className={`px-6 py-2 rounded-full text-[12px] font-black uppercase text-white ${selected.color} mb-10 inline-block shadow-xl`}>{selected.cat}</span>
-                <h1 className="text-6xl md:text-[7rem] font-black italic leading-[0.85] tracking-tighter mb-16">{selected.title}</h1>
-                
-                <div className="bg-gray-50 p-12 md:p-16 rounded-[4.5rem] border-l-[15px] border-black relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-8 opacity-5"><Info size={120} /></div>
-                  <h4 className="text-[12px] font-black uppercase text-gray-400 mb-6 tracking-[0.3em]">{t.quickContext}</h4>
-                  <p className="text-3xl md:text-4xl font-bold italic text-gray-800 leading-tight">"{selected.context}"</p>
+              <header className="mb-12">
+                <span className={`px-5 py-2 rounded-full text-[10px] font-black uppercase text-white ${selected.color} mb-8 inline-block`}>
+                  {lang === 'es' ? selected.cat : selected.catEn}
+                </span>
+                <h1 className="text-4xl md:text-7xl font-black italic tracking-tighter leading-[0.95] mb-10">
+                  {lang === 'es' ? selected.title : selected.titleEn}
+                </h1>
+                <div className="bg-gray-50 p-8 rounded-[2.5rem] border-l-[8px] border-black shadow-inner">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest mb-2 flex items-center gap-2 text-gray-400"><Mic2 size={12}/> {t.quickContext}</h4>
+                  <p className="text-xl md:text-2xl font-bold italic text-gray-700 leading-snug">"{selected.context}"</p>
                 </div>
               </header>
 
-              <section className="prose prose-2xl font-serif text-gray-800 leading-relaxed mb-28 space-y-12 px-2">
-                <p className="first-letter:text-9xl first-letter:font-black first-letter:mr-5 first-letter:float-left first-letter:leading-[0.7]">{selected.content}</p>
-                <p>Nuestros algoritmos han procesado más de 500 fuentes primarias para eliminar el ruido de las agencias de noticias tradicionales. El resultado es una visión puramente analítica de los hechos.</p>
+              <section className="prose prose-xl max-w-none text-gray-800 font-serif leading-relaxed mb-16 space-y-8">
+                {selected.content.split('\n\n').map((p: string, i: number) => (
+                  <p key={i} className="first-letter:text-6xl first-letter:font-black first-letter:mr-3 first-letter:float-left">{p}</p>
+                ))}
               </section>
 
-              {/* AUDITORÍA DE SESGO (IA) */}
-              <div className="bg-gray-50 p-12 md:p-20 rounded-[5rem] mb-28 relative shadow-inner overflow-hidden">
-                <div className="absolute -bottom-20 -right-20 text-gray-200 rotate-12"><BarChart3 size={350} /></div>
-                <h5 className="text-[14px] font-black uppercase tracking-[0.5em] mb-16 flex items-center gap-4 text-gray-400">
-                  <Shield size={24} className="text-black"/> {t.biasAnalysis}
-                </h5>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-16 relative z-10">
-                  {t.biasLabels.map((l, i) => (
-                    <div key={l} className="space-y-6">
-                      <div className="flex justify-between text-[12px] font-black uppercase">
-                        <span>{l}</span>
-                        <span className="text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">{selected.bias[i]}%</span>
-                      </div>
-                      <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
-                        <motion.div initial={{ width: 0 }} animate={{ width: `${selected.bias[i]}%` }} transition={{duration: 2, ease: "circOut"}} className="h-full bg-black shadow-lg" />
+              {!isCapturing && (
+                <>
+                  {/* AUDITORÍA DE IA */}
+                  <div className="mb-16 p-8 bg-gray-50 rounded-[3rem] border border-gray-100">
+                    <h5 className="text-[10px] font-black uppercase tracking-[0.3em] mb-8 flex items-center gap-2 text-gray-400">
+                      <BarChart3 size={16}/> {t.biasAnalysis}
+                    </h5>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      {['Objetividad', 'Hechos', 'Neutralidad'].map((label, i) => (
+                        <div key={label}>
+                          <div className="flex justify-between text-[9px] font-black uppercase mb-2">
+                            <span>{label}</span>
+                            <span>{selected.bias[i]}%</span>
+                          </div>
+                          <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                            <motion.div initial={{ width: 0 }} animate={{ width: `${selected.bias[i]}%` }} className="h-full bg-black"/>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ENCUESTA DINÁMICA */}
+                  <div className="mb-20 bg-black text-white p-8 md:p-14 rounded-[3.5rem] relative overflow-hidden shadow-2xl">
+                    <div className="absolute top-0 right-0 p-10 opacity-10 rotate-12"><Scale size={180}/></div>
+                    <h3 className="text-2xl md:text-3xl font-black mb-10 relative z-10">{selected.poll.q}</h3>
+                    <div className="space-y-4 relative z-10">
+                      {selected.poll.opts.map((o: string, i: number) => {
+                        const total = selected.poll.votes.reduce((a:number, b:number) => a + b, 0);
+                        const percentage = Math.round((selected.poll.votes[i] / total) * 100);
+                        const isMax = selected.poll.votes[i] === Math.max(...selected.poll.votes);
+                        const hasVoted = votedPolls.includes(selected.id);
+
+                        return (
+                          <button 
+                            key={o} 
+                            disabled={hasVoted}
+                            onClick={() => handleVote(selected.id, i)}
+                            className={`w-full relative p-6 rounded-2xl text-left font-bold border-2 transition-all overflow-hidden ${hasVoted ? 'border-transparent cursor-default' : 'border-white/10 hover:border-white/40 active:scale-[0.98]'}`}
+                          >
+                            {hasVoted && (
+                              <motion.div 
+                                initial={{ width: 0 }} 
+                                animate={{ width: `${percentage}%` }} 
+                                className={`absolute left-0 top-0 h-full ${isMax ? 'bg-amber-500/30' : 'bg-white/10'}`} 
+                              />
+                            )}
+                            <div className="relative z-10 flex justify-between items-center">
+                              <span className="flex items-center gap-3">
+                                {o} {hasVoted && isMax && <CheckCircle2 size={18} className="text-amber-400" />}
+                              </span>
+                              {hasVoted && <span className="font-black text-xl">{percentage}%</span>}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {votedPolls.includes(selected.id) && (
+                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-8 text-center text-[10px] font-black uppercase text-amber-400 tracking-[0.4em]">{t.voteThanks}</motion.p>
+                    )}
+                  </div>
+
+                  {/* DEBATE */}
+                  <section className="bg-white border border-gray-100 p-8 md:p-14 rounded-[3.5rem] shadow-xl">
+                    <h3 className="text-3xl font-black mb-12 flex items-center gap-4"><MessageSquare size={30}/> {t.comments}</h3>
+                    <div className="flex gap-4 mb-12">
+                      <div className="w-12 h-12 bg-black text-white rounded-2xl flex items-center justify-center font-black shrink-0 text-xl shadow-lg">{user.name[0]}</div>
+                      <div className="flex-1">
+                        <textarea 
+                          placeholder={t.postComment}
+                          className="w-full bg-gray-50 p-6 rounded-[2rem] outline-none focus:ring-2 ring-black font-medium text-base min-h-[140px] shadow-inner"
+                          value={commentText}
+                          onChange={(e) => setCommentText(e.target.value)}
+                        />
+                        <button 
+                          onClick={() => { if(commentText.trim()) { 
+                            const newItem = { id: Date.now(), user: user.name, rep: user.rep + 15, text: commentText };
+                            const updated = news.map(n => n.id === selected.id ? { ...n, comments: [newItem, ...n.comments] } : n);
+                            setNews(updated);
+                            setSelected({...selected, comments: [newItem, ...selected.comments]});
+                            setCommentText("");
+                          }}}
+                          className="mt-6 px-10 py-4 bg-black text-white rounded-full font-black text-xs uppercase tracking-widest shadow-xl hover:bg-gray-800 transition-all active:scale-95"
+                        >
+                          {t.publish}
+                        </button>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* ENCUESTA DE DEBATE */}
-              <div className="bg-black text-white p-14 md:p-24 rounded-[6rem] mb-32 shadow-[0_60px_100px_-20px_rgba(0,0,0,0.6)] relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                <h4 className="text-4xl md:text-6xl font-black mb-16 flex items-center gap-6 leading-[0.9] tracking-tighter">
-                  <Zap className="text-amber-400" size={50}/> {selected.poll.q}
-                </h4>
-                <div className="space-y-6">
-                  {selected.poll.opts.map((o, i) => {
-                    const voted = votedPolls.includes(selected.id);
-                    const total = selected.poll.votes.reduce((a,b)=>a+b, 0);
-                    const pct = Math.round((selected.poll.votes[i]/total)*100);
-                    return (
-                      <button key={i} disabled={voted} onClick={() => {
-                        setVotedPolls([...votedPolls, selected.id]);
-                      }} className={`w-full p-10 rounded-[2.5rem] border-2 transition-all relative overflow-hidden flex justify-between items-center group ${voted ? 'border-white/10' : 'border-white/20 hover:border-white hover:bg-white/5'}`}>
-                        {voted && <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} className="absolute inset-y-0 left-0 bg-white/10" />}
-                        <span className="relative z-10 font-black text-xl md:text-3xl">{o}</span>
-                        {voted && <span className="relative z-10 text-amber-400 font-black text-4xl">{pct}%</span>}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-
-              {/* FORO DE ARGUMENTACIÓN */}
-              <section className="pt-24 border-t-2 border-gray-100">
-                <div className="flex items-center justify-between mb-20">
-                  <h4 className="text-5xl md:text-6xl font-black tracking-tighter uppercase flex items-center gap-6"><MessageSquare size={50}/> {t.comments}</h4>
-                  <span className="px-6 py-3 bg-gray-50 rounded-full text-[12px] font-black uppercase text-gray-400 border border-gray-100">{selected.comments.length} argumentos</span>
-                </div>
-                
-                <div className="mb-16">
-                   <textarea placeholder={t.postComment} className="w-full p-10 rounded-[3rem] bg-gray-50 border-2 border-transparent focus:border-black outline-none font-bold text-xl min-h-[200px] transition-all" />
-                </div>
-
-                <div className="space-y-12">
-                  {selected.comments.map(c => (
-                    <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} key={c.id} className="bg-gray-50/50 p-12 rounded-[5rem] flex flex-col gap-6 border border-transparent hover:border-gray-200 transition-all">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-4">
-                          <div className="w-14 h-14 bg-black rounded-full flex items-center justify-center text-white font-black text-xl shadow-lg">{c.user[0]}</div>
-                          <span className="font-black text-2xl tracking-tight">{c.user}</span>
+                    <div className="space-y-8">
+                      {selected.comments.map((c: any) => (
+                        <div key={c.id} className="p-8 bg-gray-50/50 border border-gray-100 rounded-[2.5rem] flex flex-col gap-3">
+                          <div className="flex justify-between items-center">
+                            <span className="font-black text-sm">{c.user}</span>
+                            <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-900 rounded-full text-[9px] font-black uppercase shadow-sm">
+                              <Award size={12}/> {c.rep} {t.reputation}
+                            </div>
+                          </div>
+                          <p className="text-gray-600 font-medium leading-relaxed">{c.text}</p>
                         </div>
-                        <div className="bg-amber-100 text-amber-900 px-6 py-2 rounded-full text-[12px] font-black uppercase flex items-center gap-3 shadow-md">
-                          <Award size={16}/> {c.rep} {t.reputation}
-                        </div>
-                      </div>
-                      <p className="text-gray-700 text-2xl font-medium leading-relaxed italic border-l-4 border-gray-200 pl-10">"{c.text}"</p>
-                    </motion.div>
-                  ))}
+                      ))}
+                    </div>
+                  </section>
+                </>
+              )}
+
+              {/* FOOTER CAPTURA IG */}
+              {isCapturing && (
+                <div className="mt-20 pt-10 border-t-4 border-black flex justify-between items-end">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-black text-white px-4 py-1 font-black text-3xl italic">IX</div>
+                    <p className="text-[12px] font-black uppercase tracking-[0.3em]">Infoxity_News</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Resistencia Intelectual 2026</p>
+                  </div>
                 </div>
-              </section>
+              )}
+
+              {isCapturing && (
+                <button 
+                  onClick={() => setIsCapturing(false)}
+                  className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-white text-black px-12 py-5 rounded-full font-black uppercase tracking-[0.2em] shadow-2xl border-4 border-black z-[100] active:scale-95 transition-all"
+                >
+                  Finalizar Captura
+                </button>
+              )}
             </motion.article>
           )}
         </AnimatePresence>
       </main>
 
-      {/* FOOTER */}
       {!isCapturing && (
-        <footer className="py-32 text-center border-t border-gray-100 mt-20 bg-gray-50/20">
-          <div className="bg-black text-white inline-block px-14 py-4 font-black text-5xl italic mb-10 shadow-2xl">IX</div>
-          <p className="text-[14px] font-black text-gray-300 uppercase tracking-[1em] mb-6">Infoxity 2026</p>
-          <p className="text-[12px] font-bold text-gray-400 max-w-md mx-auto px-8 italic leading-relaxed">Protegiendo la soberanía intelectual en la era de la distracción algorítmica.</p>
+        <footer className="py-24 border-t border-gray-50 text-center">
+          <div className="bg-black text-white inline-block px-8 py-2 font-black text-3xl italic mb-6">IX</div>
+          <p className="text-[11px] text-gray-400 font-black uppercase tracking-[0.6em] px-4">
+            Infoxity 2026 © Information Sovereignty & Digital Excellence
+          </p>
         </footer>
       )}
     </div>
