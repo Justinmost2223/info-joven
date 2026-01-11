@@ -10,7 +10,7 @@ import {
   TrendingUp, Scale, Star, Menu, X, Share2
 } from 'lucide-react';
 
-// --- SISTEMA DE IDIOMAS INTEGRAL (RESTAURADO) ---
+// --- SISTEMA DE IDIOMAS INTEGRAL ---
 const TRANSLATIONS = {
   es: {
     siteName: "Infoxity | Resistencia Intelectual",
@@ -66,7 +66,7 @@ const TRANSLATIONS = {
   }
 };
 
-// --- DATA ESTRUCTURADA COMPLETA (RESTAURADA) ---
+// --- DATA ESTRUCTURADA ---
 const INITIAL_NEWS = [
   {
     id: 1,
@@ -74,7 +74,7 @@ const INITIAL_NEWS = [
     title: "Venezuela 2026: El Nuevo Eje Energético Global", titleEn: "Venezuela 2026: The New Global Energy Axis",
     context: "El acuerdo secreto entre Washington y Caracas para alimentar las granjas de servidores de IA.",
     contextEn: "The secret agreement between Washington and Caracas to power AI server farms.",
-    content: "En enero de 2026, la diplomacia energética ha dado un giro inesperado. Ante el consumo masivo de electricidad de los nuevos modelos de Inteligencia Artificial General (AGI), Estados Unidos ha firmado el 'Pacto del Caribe' con Venezuela...",
+    content: "En enero de 2026, la diplomacia energética ha dado un giro inesperado. Ante el consumo masivo de electricidad de los nuevos modelos de Inteligencia Artificial General (AGI), Estados Unidos ha firmado el 'Pacto del Caribe' con Venezuela. Este movimiento redefine no solo el mapa energético de Latinoamérica, sino que coloca a Caracas en una posición de poder inédita frente a las potencias tecnológicas del Silicon Valley.",
     contentEn: "In January 2026, energy diplomacy has taken an unexpected turn. Given the massive electricity consumption of the new General Artificial Intelligence (AGI) models...",
     bias: [95, 92, 10],
     poll: { 
@@ -98,7 +98,7 @@ const INITIAL_NEWS = [
     title: "Stranger Things 5 y el Fin del Binge-Watching", titleEn: "Stranger Things 5 and the End of Binge-Watching",
     context: "Netflix abandona el modelo de 'todo de golpe' para salvar su relevancia cultural.",
     contextEn: "Netflix abandons the 'all-at-once' model to save its cultural relevance.",
-    content: "El estreno de la última temporada de Stranger Things en 2026 marca oficialmente el funeral del maratón de series...",
+    content: "El estreno de la última temporada de Stranger Things en 2026 marca oficialmente el funeral del maratón de series. La estrategia de fragmentar el contenido en entregas semanales busca recuperar la conversación social que se perdió con el modelo de atracones digitales.",
     contentEn: "The release of the final season of Stranger Things in 2026 officially marks the funeral of the binge-watching era...",
     bias: [88, 94, 25],
     poll: { 
@@ -109,7 +109,7 @@ const INITIAL_NEWS = [
         votes: [890, 410, 120] 
     },
     color: "bg-purple-600",
-    comments: Array(23).fill({ id: Math.random(), user: "Cinephile", rep: 420, text: "Prefiero esperar, el debate semanal es mejor.", textEn: "I prefer waiting, weekly debate is better." })
+    comments: Array(5).fill({ id: Math.random(), user: "Cinephile", rep: 420, text: "Prefiero esperar, el debate semanal es mejor.", textEn: "I prefer waiting, weekly debate is better." })
   },
   {
     id: 3,
@@ -117,7 +117,7 @@ const INITIAL_NEWS = [
     title: "Gen Z: El Fin de la Izquierda y la Derecha", titleEn: "Gen Z: The End of Left and Right",
     context: "El 70% de los jóvenes votantes en 2026 se declaran 'Pragmáticos Radicales'.",
     contextEn: "70% of young voters in 2026 declare themselves 'Radical Pragmatists'.",
-    content: "Las etiquetas políticas tradicionales han colapsado. Un estudio profundo realizado por el equipo de Infoxity...",
+    content: "Las etiquetas políticas tradicionales han colapsado. Un estudio profundo realizado por el equipo de Infoxity revela que la Generación Z valora la eficiencia de los resultados sobre la fidelidad a una bandera ideológica concreta.",
     contentEn: "Traditional political labels have collapsed. An in-depth study conducted by the Infoxity team...",
     bias: [98, 96, 5],
     poll: { 
@@ -128,7 +128,7 @@ const INITIAL_NEWS = [
         votes: [1500, 600, 150] 
     },
     color: "bg-emerald-600",
-    comments: Array(34).fill({ id: Math.random(), user: "Votante Crítico", rep: 1100, text: "La gestión importa más que la bandera.", textEn: "Management matters more than the flag." })
+    comments: Array(3).fill({ id: Math.random(), user: "Votante Crítico", rep: 1100, text: "La gestión importa más que la bandera.", textEn: "Management matters more than the flag." })
   }
 ];
 
@@ -145,12 +145,13 @@ export default function InfoxityApp() {
 
   const t = TRANSLATIONS[lang];
 
-  // --- LÓGICA SEO: TÍTULO DINÁMICO ---
+  // --- SEO DINÁMICO ---
   useEffect(() => {
-    const pageTitle = selected 
-      ? `${lang === 'es' ? selected.title : selected.titleEn} | Infoxity` 
-      : t.siteName;
-    document.title = pageTitle;
+    if (selected) {
+      document.title = `${lang === 'es' ? selected.title : selected.titleEn} | Infoxity`;
+    } else {
+      document.title = t.siteName;
+    }
   }, [selected, lang, t.siteName]);
 
   useEffect(() => {
@@ -158,7 +159,6 @@ export default function InfoxityApp() {
     return () => clearInterval(interval);
   }, []);
 
-  // --- ACCIONES RESTAURADAS ---
   const toggleSave = (id) => {
     setSavedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
@@ -177,6 +177,7 @@ export default function InfoxityApp() {
     setVotedPolls([...votedPolls, newsId]);
   };
 
+  // --- VISTA ONBOARDING ---
   if (!user) {
     return (
       <main className="fixed inset-0 bg-gray-50 z-[100] flex items-center justify-center p-4">
@@ -203,12 +204,12 @@ export default function InfoxityApp() {
   return (
     <div className={`min-h-screen transition-all duration-700 ${isCapturing ? 'bg-black' : 'bg-white'}`}>
       
-      {/* SEO HEAD */}
       <Head>
-        <title>{selected ? selected.title : t.siteName}</title>
-        <meta name="description" content={selected ? selected.context : t.identityBody} />
+        <title>{selected ? (lang === 'es' ? selected.title : selected.titleEn) : t.siteName}</title>
+        <meta name="description" content={selected ? (lang === 'es' ? selected.context : selected.contextEn) : t.identityBody} />
       </Head>
 
+      {/* HEADER */}
       {!isCapturing && (
         <header className="fixed top-0 left-0 w-full bg-white/80 backdrop-blur-xl z-50 px-4 md:px-12 py-4 border-b border-gray-50 flex justify-between items-center">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => setSelected(null)}>
@@ -236,6 +237,7 @@ export default function InfoxityApp() {
               
               <h1 className="sr-only">Infoxity - {t.tagline}</h1>
 
+              {/* SECCIÓN HERO */}
               <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <div className="lg:col-span-8 bg-black text-white p-10 md:p-16 rounded-[3.5rem] relative overflow-hidden flex flex-col justify-end min-h-[450px] shadow-2xl">
                   <div className="absolute top-8 right-8 text-white/10 rotate-12"><Shield size={250} /></div>
@@ -264,6 +266,7 @@ export default function InfoxityApp() {
                 </div>
               </section>
 
+              {/* GRID DE NOTICIAS */}
               <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {news.map(n => (
                   <motion.article 
@@ -282,8 +285,8 @@ export default function InfoxityApp() {
                         <MessageSquare size={14} /> {n.comments.length} {t.totalComments}
                       </div>
                       <div className="flex gap-2">
-                         <button onClick={() => toggleSave(n.id)} className="p-2 rounded-full bg-gray-50">
-                           {savedIds.includes(n.id) ? <BookmarkCheck className="text-blue-600" size={18}/> : <Bookmark size={18}/>}
+                         <button onClick={() => toggleSave(n.id)} className="p-2 rounded-full hover:bg-gray-100 transition-all">
+                            {savedIds.includes(n.id) ? <BookmarkCheck className="text-blue-600" size={18}/> : <Bookmark size={18}/>}
                          </button>
                          <button onClick={() => setSelected(n)} className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-all"><ChevronRight size={18}/></button>
                       </div>
@@ -301,11 +304,11 @@ export default function InfoxityApp() {
                 <button onClick={() => setSelected(null)} className="flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 hover:text-black">
                   <ArrowLeft size={16}/> {t.back}
                 </button>
-                <div className="flex gap-4">
-                  <button onClick={() => setIsCapturing(!isCapturing)} className="p-3 bg-gray-50 rounded-full hover:bg-black hover:text-white transition-all">
+                <div className="flex gap-3">
+                  <button onClick={() => setIsCapturing(!isCapturing)} className={`p-3 rounded-full transition-all ${isCapturing ? 'bg-black text-white' : 'bg-gray-50 hover:bg-black hover:text-white'}`}>
                     <Instagram size={20} />
                   </button>
-                  <button onClick={() => toggleSave(selected.id)} className="p-3 bg-gray-50 rounded-full">
+                  <button onClick={() => toggleSave(selected.id)} className="p-3 bg-gray-50 rounded-full hover:bg-blue-50 transition-all">
                     {savedIds.includes(selected.id) ? <BookmarkCheck className="text-blue-600" size={20}/> : <Bookmark size={20}/>}
                   </button>
                 </div>
@@ -376,7 +379,7 @@ export default function InfoxityApp() {
                 </div>
               </div>
 
-              {/* COMENTARIOS RESTAURADOS */}
+              {/* FORO DE DEBATE */}
               <section className="bg-white border border-gray-100 p-8 md:p-14 rounded-[3.5rem] shadow-xl">
                 <h3 className="text-3xl font-black mb-12 flex items-center gap-4">
                     <MessageSquare size={30}/> {t.comments} ({selected.comments.length})
@@ -401,12 +404,15 @@ export default function InfoxityApp() {
         </AnimatePresence>
       </main>
 
-      <footer className="py-24 border-t border-gray-50 text-center">
-        <div className="bg-black text-white inline-block px-8 py-2 font-black text-3xl italic mb-6">IX</div>
-        <p className="text-[11px] text-gray-400 font-black uppercase tracking-[0.6em] px-4">
-          Infoxity 2026 © {lang === 'es' ? 'Soberanía de Información' : 'Information Sovereignty'}
-        </p>
-      </footer>
+      {/* FOOTER */}
+      {!isCapturing && (
+        <footer className="py-24 border-t border-gray-50 text-center">
+          <div className="bg-black text-white inline-block px-8 py-2 font-black text-3xl italic mb-6">IX</div>
+          <p className="text-[11px] text-gray-400 font-black uppercase tracking-[0.6em] px-4">
+            Infoxity 2026 © {lang === 'es' ? 'Soberanía de Información' : 'Information Sovereignty'}
+          </p>
+        </footer>
+      )}
     </div>
   );
 }
