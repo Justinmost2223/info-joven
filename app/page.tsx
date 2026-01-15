@@ -9,7 +9,7 @@ import {
   TrendingUp, Scale, Star, Menu, X, Share2
 } from 'lucide-react';
 
-// --- SISTEMA DE IDIOMAS ---
+// --- SISTEMA DE IDIOMAS (SIN CAMBIOS) ---
 const TRANSLATIONS = {
   es: {
     siteName: "Infoxity",
@@ -63,7 +63,7 @@ const TRANSLATIONS = {
   }
 };
 
-// --- DATA ESTRUCTURADA ---
+// --- DATA ESTRUCTURADA (SIN CAMBIOS) ---
 const INITIAL_NEWS = [
   {
     id: 1,
@@ -71,10 +71,11 @@ const INITIAL_NEWS = [
     title: "Venezuela 2026: El Nuevo Eje Energético Global", titleEn: "Venezuela 2026: The New Global Energy Axis",
     context: "El acuerdo secreto entre Washington y Caracas para alimentar las granjas de servidores de IA en EE.UU.",
     content: "En enero de 2026, la diplomacia energética ha dado un giro inesperado. Ante el consumo masivo de electricidad de los nuevos modelos de Inteligencia Artificial General (AGI), Estados Unidos ha firmado el 'Pacto del Caribe' con Venezuela. Este acuerdo no solo implica el levantamiento de sanciones, sino la inversión masiva en infraestructura venezolana a cambio de crudo pesado destinado exclusivamente a la generación eléctrica de centros de datos en Texas y Florida.\n\nEl análisis de Infoxity revela que este movimiento estabiliza la economía regional pero genera una nueva dependencia tecnológica. Mientras el mundo miraba hacia las renovables, la urgencia de la computación ha devuelto el poder a las reservas fósiles más grandes del mundo.",
-    bias: [95, 92, 10], // Objetividad, Hechos, Emoción
+    bias: [95, 92, 10], 
     poll: { q: "¿Es ético priorizar la IA sobre las sanciones?", opts: ["Pragmatismo necesario", "Error histórico", "Neutral"], votes: [540, 210, 95] },
     sources: ["OPEP+ Energy Report", "Digital Geopolitics Journal"],
-    color: "bg-orange-600",
+    color: "from-orange-500 to-red-600",
+    shadow: "shadow-orange-200",
     comments: [{ id: 1, user: "Mateo Fernández", rep: 1250, text: "La energía manda, las ideologías solo adornan. 🔋" }]
   },
   {
@@ -86,7 +87,8 @@ const INITIAL_NEWS = [
     bias: [88, 94, 25],
     poll: { q: "¿Prefieres esperar o verlo todo ya?", opts: ["Esperar (Crea hype)", "Todo ya", "Indiferente"], votes: [890, 410, 120] },
     sources: ["Streaming Analytics 2026", "Variety Insights"],
-    color: "bg-purple-600",
+    color: "from-purple-500 to-indigo-600",
+    shadow: "shadow-purple-200",
     comments: [{ id: 3, user: "Carlos Ruiz", rep: 560, text: "Por fin podré hablar de la serie sin spoilers el primer día. 🙌" }]
   },
   {
@@ -98,7 +100,8 @@ const INITIAL_NEWS = [
     bias: [98, 96, 5],
     poll: { q: "¿Te sientes representado por algún partido?", opts: ["Ninguno", "Por ideas sueltas", "Sí, soy fiel"], votes: [1500, 600, 150] },
     sources: ["Pew Research Center 2026", "Infoxity Data Hub"],
-    color: "bg-emerald-600",
+    color: "from-emerald-500 to-teal-600",
+    shadow: "shadow-emerald-200",
     comments: [{ id: 4, user: "Lucía Méndez", rep: 2100, text: "La eficiencia no tiene color político. Queremos que funcione." }]
   }
 ];
@@ -144,19 +147,19 @@ export default function InfoxityApp() {
 
   if (!user) {
     return (
-      <main className="fixed inset-0 bg-gray-50 z-[100] flex items-center justify-center p-4">
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="max-w-md w-full p-8 md:p-12 rounded-[3rem] shadow-2xl border border-gray-100 text-center bg-white">
-          <div className="bg-black text-white inline-block px-6 py-1 font-black text-3xl italic mb-6">IX</div>
-          <h1 className="text-2xl font-black mb-4">{t.welcome}</h1>
-          <p className="text-gray-400 text-sm mb-8 leading-relaxed">{t.onboarding}</p>
+      <main className="fixed inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-50 via-gray-100 to-gray-200 z-[100] flex items-center justify-center p-4">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md w-full p-10 md:p-14 rounded-[3.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.15)] border border-white/50 text-center bg-white/80 backdrop-blur-2xl">
+          <div className="bg-gradient-to-br from-blue-600 to-indigo-800 text-white inline-block px-7 py-2 font-black text-4xl italic mb-8 rounded-2xl shadow-lg shadow-blue-500/20">IX</div>
+          <h1 className="text-3xl font-black mb-4 text-gray-900 tracking-tight">{t.welcome}</h1>
+          <p className="text-gray-500 text-sm mb-10 leading-relaxed font-medium">{t.onboarding}</p>
           <input 
             type="text" placeholder={t.placeholder} 
-            className="w-full p-5 rounded-2xl bg-gray-50 border border-gray-100 mb-4 font-bold text-center outline-none focus:ring-2 ring-black transition-all"
+            className="w-full p-5 rounded-2xl bg-white border-2 border-gray-100 mb-6 font-bold text-center outline-none focus:border-blue-500 focus:ring-4 ring-blue-500/10 transition-all shadow-inner"
             onChange={(e) => setNameInput(e.target.value)}
           />
           <button 
             onClick={() => nameInput && setUser({ name: nameInput, rep: 100 })}
-            className="w-full bg-black text-white p-5 rounded-2xl font-black uppercase tracking-widest hover:bg-gray-800 active:scale-95 transition-all"
+            className="w-full bg-gradient-to-r from-gray-900 to-black text-white p-5 rounded-2xl font-black uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-xl"
           >
             {t.actionButton}
           </button>
@@ -166,75 +169,75 @@ export default function InfoxityApp() {
   }
 
   return (
-    <div className={`min-h-screen transition-all duration-700 ${isCapturing ? 'bg-black' : 'bg-white'}`}>
+    <div className={`min-h-screen transition-all duration-700 ${isCapturing ? 'bg-black p-0' : 'bg-[#fafafa]'}`}>
       
-      {/* HEADER PROFESIONAL */}
+      {/* HEADER DINÁMICO */}
       {!isCapturing && (
-        <header className="fixed top-0 left-0 w-full bg-white/80 backdrop-blur-xl z-50 px-4 md:px-12 py-4 border-b border-gray-50 flex justify-between items-center">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setSelected(null)}>
-            <div className="bg-black text-white px-3 py-0.5 font-black text-xl italic">IX</div>
-            <span className="font-black text-[10px] uppercase tracking-[0.3em] hidden sm:block">{t.siteName}</span>
+        <header className="fixed top-0 left-0 w-full bg-white/70 backdrop-blur-2xl z-50 px-6 md:px-12 py-5 border-b border-gray-100 flex justify-between items-center">
+          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setSelected(null)}>
+            <div className="bg-black text-white px-3 py-1 font-black text-xl italic group-hover:scale-110 transition-transform">IX</div>
+            <span className="font-black text-xs uppercase tracking-[0.4em] bg-clip-text text-transparent bg-gradient-to-r from-black to-gray-500 hidden sm:block">{t.siteName}</span>
           </div>
           <div className="flex items-center gap-3 md:gap-6">
-            <div className="bg-gray-50 px-3 md:px-4 py-2 rounded-full border border-gray-100 flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-tighter">
+            <div className="bg-white px-4 py-2 rounded-full border border-gray-200 flex items-center gap-2 shadow-sm">
+              <span className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
+              <span className="text-[10px] font-black text-gray-500 uppercase">
                 {readers.toLocaleString()} {t.reading}
               </span>
             </div>
-            <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="p-2 hover:bg-black hover:text-white rounded-xl transition-all border border-gray-100">
+            <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="w-10 h-10 flex items-center justify-center bg-gray-900 text-white rounded-xl hover:bg-blue-600 transition-all shadow-lg">
               <Languages size={18} />
             </button>
           </div>
         </header>
       )}
 
-      <main className={`max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 ${isCapturing ? 'pt-10' : 'pt-24 md:pt-32 pb-20'}`}>
+      <main className={`max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 ${isCapturing ? 'pt-0' : 'pt-28 md:pt-36 pb-20'}`}>
         <AnimatePresence mode="wait">
           {!selected ? (
-            <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-16">
+            <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-20">
               
-              {/* SECCIÓN BIBLIOTECA (SÓLO SI HAY GUARDADOS) */}
+              {/* BIBLIOTECA VIVA */}
               {savedNews.length > 0 && (
                 <section>
-                  <h3 className="text-[10px] font-black tracking-[0.4em] text-gray-400 uppercase mb-6 flex items-center gap-2">
-                    <Star size={12} className="text-amber-500" /> {t.myLibrary}
+                  <h3 className="text-[10px] font-black tracking-[0.5em] text-blue-600 uppercase mb-8 flex items-center gap-2">
+                    <Star size={14} className="fill-blue-600" /> {t.myLibrary}
                   </h3>
-                  <div className="flex gap-4 overflow-x-auto pb-6 no-scrollbar">
+                  <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar">
                     {savedNews.map(n => (
-                      <div 
+                      <motion.div 
+                        whileHover={{ scale: 1.05 }}
                         key={n.id} onClick={() => setSelected(n)}
-                        className="min-w-[280px] bg-gray-50 p-6 rounded-[2.5rem] border border-gray-100 cursor-pointer hover:bg-white hover:shadow-xl transition-all"
+                        className="min-w-[300px] bg-white p-8 rounded-[3rem] border border-gray-100 cursor-pointer shadow-lg hover:shadow-2xl transition-all"
                       >
-                        <span className="text-[8px] font-black uppercase text-gray-400 mb-2 block">{lang === 'es' ? n.cat : n.catEn}</span>
-                        <h4 className="font-black text-sm leading-tight">{lang === 'es' ? n.title : n.titleEn}</h4>
-                      </div>
+                        <span className="text-[9px] font-black uppercase text-blue-500 mb-3 block">{lang === 'es' ? n.cat : n.catEn}</span>
+                        <h4 className="font-black text-lg leading-tight text-gray-900">{lang === 'es' ? n.title : n.titleEn}</h4>
+                      </motion.div>
                     ))}
                   </div>
                 </section>
               )}
 
-              {/* NOTICIA DESTACADA: ¿POR QUÉ INFOXITY? */}
-              <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div className="lg:col-span-8 bg-black text-white p-10 md:p-16 rounded-[3.5rem] relative overflow-hidden flex flex-col justify-end min-h-[450px] shadow-2xl">
-                  <div className="absolute top-8 right-8 text-white/10 rotate-12"><Shield size={250} /></div>
+              {/* HERO VIBRANTE */}
+              <section className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <div className="lg:col-span-8 bg-gradient-to-br from-gray-900 via-black to-blue-950 text-white p-12 md:p-20 rounded-[4rem] relative overflow-hidden flex flex-col justify-end min-h-[500px] shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)] border-t border-white/10">
+                  <div className="absolute -top-10 -right-10 text-white/5 rotate-12 scale-150"><Shield size={350} /></div>
                   <div className="relative z-10">
-                    <span className="text-amber-400 font-black text-[10px] tracking-[0.4em] mb-4 block uppercase">{t.featured}</span>
-                    <h2 className="text-4xl md:text-7xl font-black italic tracking-tighter mb-6 leading-[0.9]">{t.identityTitle}</h2>
-                    <p className="text-gray-400 text-lg md:text-xl font-light max-w-2xl leading-relaxed">{t.identityBody}</p>
+                    <span className="bg-blue-600 text-[10px] font-black px-4 py-1.5 rounded-full tracking-[0.4em] mb-8 inline-block shadow-lg shadow-blue-500/20">{t.featured}</span>
+                    <h2 className="text-5xl md:text-8xl font-black italic tracking-tighter mb-8 leading-[0.85]">{t.identityTitle}</h2>
+                    <p className="text-gray-300 text-lg md:text-2xl font-light max-w-2xl leading-relaxed opacity-90">{t.identityBody}</p>
                   </div>
                 </div>
 
-                {/* TENDENCIAS LATERALES */}
-                <div className="lg:col-span-4 flex flex-col justify-center px-2">
-                  <h3 className="text-[10px] font-black tracking-[0.4em] text-gray-300 uppercase mb-8">{t.popular}</h3>
-                  <div className="space-y-8">
+                <div className="lg:col-span-4 flex flex-col justify-center bg-white p-10 rounded-[4rem] border border-gray-100 shadow-xl">
+                  <h3 className="text-[10px] font-black tracking-[0.5em] text-gray-400 uppercase mb-12">{t.popular}</h3>
+                  <div className="space-y-10">
                     {news.map((n, i) => (
-                      <div key={n.id} onClick={() => { setSelected(n); window.scrollTo(0,0); }} className="group cursor-pointer flex gap-5 items-start">
-                        <span className="font-black text-gray-100 text-5xl leading-none">0{i+1}</span>
+                      <div key={n.id} onClick={() => { setSelected(n); window.scrollTo(0,0); }} className="group cursor-pointer flex gap-6 items-start">
+                        <span className="font-black text-gray-100 text-6xl leading-none group-hover:text-blue-500 transition-colors">0{i+1}</span>
                         <div>
-                          <h4 className="font-black text-lg leading-tight group-hover:text-blue-600 transition-colors">{lang === 'es' ? n.title : n.titleEn}</h4>
-                          <span className="text-[9px] font-black uppercase text-gray-400">{lang === 'es' ? n.cat : n.catEn}</span>
+                          <h4 className="font-black text-xl leading-tight text-gray-900 group-hover:text-blue-600 transition-all">{lang === 'es' ? n.title : n.titleEn}</h4>
+                          <span className="text-[10px] font-black uppercase text-blue-400 tracking-widest mt-2 block">{lang === 'es' ? n.cat : n.catEn}</span>
                         </div>
                       </div>
                     ))}
@@ -242,23 +245,24 @@ export default function InfoxityApp() {
                 </div>
               </section>
 
-              {/* GRID PRINCIPAL */}
-              <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* GRID PRINCIPAL CON COLORES */}
+              <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {news.map(n => (
                   <motion.div 
-                    key={n.id} whileHover={{ y: -8 }}
-                    className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm hover:shadow-2xl transition-all flex flex-col justify-between min-h-[420px]"
+                    key={n.id} whileHover={{ y: -12 }}
+                    className={`bg-white p-12 rounded-[3.5rem] border border-gray-100 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] hover:shadow-2xl hover:shadow-blue-500/10 transition-all flex flex-col justify-between min-h-[460px] relative overflow-hidden group`}
                   >
-                    <div className="cursor-pointer" onClick={() => setSelected(n)}>
-                      <span className={`px-4 py-1 rounded-full text-[9px] font-black uppercase text-white ${n.color} mb-6 inline-block shadow-lg shadow-black/5`}>{lang === 'es' ? n.cat : n.catEn}</span>
-                      <h3 className="text-2xl font-black leading-tight mb-4 group-hover:underline">{lang === 'es' ? n.title : n.titleEn}</h3>
-                      <p className="text-gray-400 text-sm italic font-medium">"{n.context}"</p>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-gray-50 to-transparent -rotate-45 translate-x-12 -translate-y-12 transition-transform group-hover:translate-x-10 group-hover:-translate-y-10 opacity-50"/>
+                    <div className="cursor-pointer relative z-10" onClick={() => setSelected(n)}>
+                      <span className={`px-5 py-2 rounded-full text-[10px] font-black uppercase text-white bg-gradient-to-r ${n.color} mb-8 inline-block shadow-lg ${n.shadow}/50`}>{lang === 'es' ? n.cat : n.catEn}</span>
+                      <h3 className="text-3xl font-black leading-[1.1] mb-6 text-gray-900 group-hover:text-blue-600 transition-colors">{lang === 'es' ? n.title : n.titleEn}</h3>
+                      <p className="text-gray-500 text-base italic font-semibold leading-relaxed">"{n.context}"</p>
                     </div>
-                    <div className="flex justify-between items-center pt-6 border-t border-gray-50 mt-8">
-                      <button onClick={() => toggleSave(n.id)} className="p-2 transition-all active:scale-125">
-                        {savedIds.includes(n.id) ? <BookmarkCheck className="text-black" size={22} /> : <Bookmark className="text-gray-200 hover:text-black" size={22} />}
+                    <div className="flex justify-between items-center pt-8 border-t border-gray-100 mt-10 relative z-10">
+                      <button onClick={() => toggleSave(n.id)} className="w-12 h-12 flex items-center justify-center rounded-2xl bg-gray-50 transition-all active:scale-125 hover:bg-gray-100">
+                        {savedIds.includes(n.id) ? <BookmarkCheck className="text-blue-600" size={24} /> : <Bookmark className="text-gray-300" size={24} />}
                       </button>
-                      <button onClick={() => setSelected(n)} className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-all"><ChevronRight size={18}/></button>
+                      <button onClick={() => setSelected(n)} className="w-12 h-12 bg-black text-white rounded-2xl flex items-center justify-center hover:bg-blue-600 hover:-rotate-12 transition-all shadow-lg shadow-black/10"><ChevronRight size={22}/></button>
                     </div>
                   </motion.div>
                 ))}
@@ -266,72 +270,71 @@ export default function InfoxityApp() {
             </motion.div>
           ) : (
             <motion.article 
-              key="article" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              className={`max-w-4xl mx-auto ${isCapturing ? 'bg-white p-8 md:p-16 rounded-[4rem] border-[12px] border-black mt-4' : 'pb-20'}`}
+              key="article" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
+              className={`max-w-4xl mx-auto ${isCapturing ? 'bg-white p-12 md:p-20 rounded-[5rem] border-[16px] border-black mt-10' : 'pb-32'}`}
             >
-              {/* BOTONES DE ACCIÓN ARRIBA */}
               {!isCapturing && (
-                <div className="flex justify-between items-center mb-8">
-                  <button onClick={() => setSelected(null)} className="flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 hover:text-black">
-                    <ArrowLeft size={16}/> {t.back}
+                <div className="flex justify-between items-center mb-12">
+                  <button onClick={() => setSelected(null)} className="flex items-center gap-3 text-xs font-black uppercase text-gray-400 hover:text-black transition-colors group">
+                    <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" /> {t.back}
                   </button>
                   <div className="flex gap-4">
-                    <button onClick={() => toggleSave(selected.id)} className="text-black transition-transform active:scale-125">
-                      {savedIds.includes(selected.id) ? <BookmarkCheck size={26} /> : <Bookmark size={26} className="text-gray-300" />}
+                    <button onClick={() => toggleSave(selected.id)} className="w-12 h-12 bg-white rounded-2xl border border-gray-100 flex items-center justify-center shadow-md active:scale-125 transition-all">
+                      {savedIds.includes(selected.id) ? <BookmarkCheck size={24} className="text-blue-600" /> : <Bookmark size={24} className="text-gray-300" />}
                     </button>
-                    <button onClick={() => setIsCapturing(true)} className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-full text-[10px] font-black uppercase">
-                      <Instagram size={16}/> {t.capture}
+                    <button onClick={() => setIsCapturing(true)} className="flex items-center gap-3 px-8 py-4 bg-black text-white rounded-3xl text-xs font-black uppercase tracking-widest shadow-xl hover:bg-blue-600 transition-all">
+                      <Instagram size={20}/> {t.capture}
                     </button>
                   </div>
                 </div>
               )}
 
-              <header className="mb-12">
-                <span className={`px-5 py-2 rounded-full text-[10px] font-black uppercase text-white ${selected.color} mb-8 inline-block`}>
+              <header className="mb-16">
+                <span className={`px-6 py-2 rounded-full text-[11px] font-black uppercase text-white bg-gradient-to-r ${selected.color} mb-10 inline-block shadow-xl`}>
                   {lang === 'es' ? selected.cat : selected.catEn}
                 </span>
-                <h1 className="text-4xl md:text-7xl font-black italic tracking-tighter leading-[0.95] mb-10">
+                <h1 className="text-5xl md:text-8xl font-black italic tracking-tighter leading-[0.85] mb-12 text-gray-900">
                   {lang === 'es' ? selected.title : selected.titleEn}
                 </h1>
-                <div className="bg-gray-50 p-8 rounded-[2.5rem] border-l-[8px] border-black shadow-inner">
-                  <h4 className="text-[10px] font-black uppercase tracking-widest mb-2 flex items-center gap-2 text-gray-400"><Mic2 size={12}/> {t.quickContext}</h4>
-                  <p className="text-xl md:text-2xl font-bold italic text-gray-700 leading-snug">"{selected.context}"</p>
+                <div className="bg-white p-10 rounded-[3.5rem] border-l-[12px] border-black shadow-2xl shadow-gray-200/50">
+                  <h4 className="text-[11px] font-black uppercase tracking-[0.5em] mb-4 flex items-center gap-2 text-blue-600"><Mic2 size={16}/> {t.quickContext}</h4>
+                  <p className="text-2xl md:text-4xl font-bold italic text-gray-800 leading-[1.1]">"{selected.context}"</p>
                 </div>
               </header>
 
-              <section className="prose prose-xl max-w-none text-gray-800 font-serif leading-relaxed mb-16 space-y-8">
+              <section className="prose prose-2xl max-w-none text-gray-800 font-serif leading-relaxed mb-24 space-y-10 px-2 md:px-6">
                 {selected.content.split('\n\n').map((p: string, i: number) => (
-                  <p key={i} className="first-letter:text-6xl first-letter:font-black first-letter:mr-3 first-letter:float-left">{p}</p>
+                  <p key={i} className="first-letter:text-7xl first-letter:font-black first-letter:mr-4 first-letter:float-left first-letter:text-blue-600">{p}</p>
                 ))}
               </section>
 
               {!isCapturing && (
-                <>
-                  {/* AUDITORÍA DE IA */}
-                  <div className="mb-16 p-8 bg-gray-50 rounded-[3rem] border border-gray-100">
-                    <h5 className="text-[10px] font-black uppercase tracking-[0.3em] mb-8 flex items-center gap-2 text-gray-400">
-                      <BarChart3 size={16}/> {t.biasAnalysis}
+                <div className="space-y-20">
+                  {/* AUDITORÍA MODERNA */}
+                  <div className="p-12 bg-white rounded-[4rem] border border-gray-100 shadow-xl">
+                    <h5 className="text-[11px] font-black uppercase tracking-[0.4em] mb-12 flex items-center gap-3 text-gray-400">
+                      <BarChart3 size={20} className="text-blue-600"/> {t.biasAnalysis}
                     </h5>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                       {['Objetividad', 'Hechos', 'Neutralidad'].map((label, i) => (
                         <div key={label}>
-                          <div className="flex justify-between text-[9px] font-black uppercase mb-2">
+                          <div className="flex justify-between text-[10px] font-black uppercase mb-4 text-gray-900">
                             <span>{label}</span>
-                            <span>{selected.bias[i]}%</span>
+                            <span className="text-blue-600">{selected.bias[i]}%</span>
                           </div>
-                          <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                            <motion.div initial={{ width: 0 }} animate={{ width: `${selected.bias[i]}%` }} className="h-full bg-black"/>
+                          <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden shadow-inner">
+                            <motion.div initial={{ width: 0 }} animate={{ width: `${selected.bias[i]}%` }} className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 shadow-[0_0_12px_rgba(79,70,229,0.3)]"/>
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* ENCUESTA DINÁMICA */}
-                  <div className="mb-20 bg-black text-white p-8 md:p-14 rounded-[3.5rem] relative overflow-hidden shadow-2xl">
-                    <div className="absolute top-0 right-0 p-10 opacity-10 rotate-12"><Scale size={180}/></div>
-                    <h3 className="text-2xl md:text-3xl font-black mb-10 relative z-10">{selected.poll.q}</h3>
-                    <div className="space-y-4 relative z-10">
+                  {/* ENCUESTA PREMIUM */}
+                  <div className="bg-gradient-to-br from-gray-950 via-black to-blue-950 text-white p-10 md:p-20 rounded-[5rem] relative overflow-hidden shadow-3xl">
+                    <div className="absolute top-0 right-0 p-16 opacity-10 rotate-12 scale-150"><Scale size={200}/></div>
+                    <h3 className="text-3xl md:text-5xl font-black mb-14 relative z-10 leading-tight">{selected.poll.q}</h3>
+                    <div className="space-y-6 relative z-10">
                       {selected.poll.opts.map((o: string, i: number) => {
                         const total = selected.poll.votes.reduce((a:number, b:number) => a + b, 0);
                         const percentage = Math.round((selected.poll.votes[i] / total) * 100);
@@ -343,39 +346,39 @@ export default function InfoxityApp() {
                             key={o} 
                             disabled={hasVoted}
                             onClick={() => handleVote(selected.id, i)}
-                            className={`w-full relative p-6 rounded-2xl text-left font-bold border-2 transition-all overflow-hidden ${hasVoted ? 'border-transparent cursor-default' : 'border-white/10 hover:border-white/40 active:scale-[0.98]'}`}
+                            className={`w-full relative p-8 rounded-[2.5rem] text-left font-bold border-2 transition-all overflow-hidden ${hasVoted ? 'border-transparent cursor-default' : 'border-white/10 hover:border-blue-500 active:scale-[0.98]'}`}
                           >
                             {hasVoted && (
                               <motion.div 
                                 initial={{ width: 0 }} 
                                 animate={{ width: `${percentage}%` }} 
-                                className={`absolute left-0 top-0 h-full ${isMax ? 'bg-amber-500/30' : 'bg-white/10'}`} 
+                                className={`absolute left-0 top-0 h-full ${isMax ? 'bg-blue-600/40' : 'bg-white/10'}`} 
                               />
                             )}
                             <div className="relative z-10 flex justify-between items-center">
-                              <span className="flex items-center gap-3">
-                                {o} {hasVoted && isMax && <CheckCircle2 size={18} className="text-amber-400" />}
+                              <span className="text-xl flex items-center gap-4">
+                                {o} {hasVoted && isMax && <CheckCircle2 size={24} className="text-blue-400 animate-bounce" />}
                               </span>
-                              {hasVoted && <span className="font-black text-xl">{percentage}%</span>}
+                              {hasVoted && <span className="font-black text-3xl">{percentage}%</span>}
                             </div>
                           </button>
                         );
                       })}
                     </div>
                     {votedPolls.includes(selected.id) && (
-                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-8 text-center text-[10px] font-black uppercase text-amber-400 tracking-[0.4em]">{t.voteThanks}</motion.p>
+                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-12 text-center text-xs font-black uppercase text-blue-400 tracking-[0.5em]">{t.voteThanks}</motion.p>
                     )}
                   </div>
 
-                  {/* DEBATE */}
-                  <section className="bg-white border border-gray-100 p-8 md:p-14 rounded-[3.5rem] shadow-xl">
-                    <h3 className="text-3xl font-black mb-12 flex items-center gap-4"><MessageSquare size={30}/> {t.comments}</h3>
-                    <div className="flex gap-4 mb-12">
-                      <div className="w-12 h-12 bg-black text-white rounded-2xl flex items-center justify-center font-black shrink-0 text-xl shadow-lg">{user.name[0]}</div>
+                  {/* DEBATE COLORIDO */}
+                  <section className="bg-white p-10 md:p-20 rounded-[5rem] shadow-[0_40px_100px_rgba(0,0,0,0.05)] border border-gray-50">
+                    <h3 className="text-4xl font-black mb-16 flex items-center gap-5 italic"><MessageSquare size={40} className="text-blue-600"/> {t.comments}</h3>
+                    <div className="flex gap-6 mb-16">
+                      <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-800 text-white rounded-[1.5rem] flex items-center justify-center font-black shrink-0 text-3xl shadow-xl">{user.name[0]}</div>
                       <div className="flex-1">
                         <textarea 
                           placeholder={t.postComment}
-                          className="w-full bg-gray-50 p-6 rounded-[2rem] outline-none focus:ring-2 ring-black font-medium text-base min-h-[140px] shadow-inner"
+                          className="w-full bg-gray-50 p-8 rounded-[3rem] outline-none focus:ring-4 ring-blue-500/10 font-bold text-xl min-h-[180px] shadow-inner border border-gray-100"
                           value={commentText}
                           onChange={(e) => setCommentText(e.target.value)}
                         />
@@ -387,38 +390,41 @@ export default function InfoxityApp() {
                             setSelected({...selected, comments: [newItem, ...selected.comments]});
                             setCommentText("");
                           }}}
-                          className="mt-6 px-10 py-4 bg-black text-white rounded-full font-black text-xs uppercase tracking-widest shadow-xl hover:bg-gray-800 transition-all active:scale-95"
+                          className="mt-8 px-12 py-5 bg-black text-white rounded-full font-black text-sm uppercase tracking-[0.2em] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] hover:bg-blue-600 hover:scale-105 transition-all"
                         >
                           {t.publish}
                         </button>
                       </div>
                     </div>
-                    <div className="space-y-8">
+                    <div className="space-y-10">
                       {selected.comments.map((c: any) => (
-                        <div key={c.id} className="p-8 bg-gray-50/50 border border-gray-100 rounded-[2.5rem] flex flex-col gap-3">
+                        <motion.div initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} key={c.id} className="p-10 bg-[#fcfcfc] border border-gray-100 rounded-[3.5rem] flex flex-col gap-5 hover:border-blue-200 transition-all shadow-sm">
                           <div className="flex justify-between items-center">
-                            <span className="font-black text-sm">{c.user}</span>
-                            <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-900 rounded-full text-[9px] font-black uppercase shadow-sm">
-                              <Award size={12}/> {c.rep} {t.reputation}
+                            <span className="font-black text-lg text-gray-900 tracking-tight">{c.user}</span>
+                            <div className="flex items-center gap-2 px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-[10px] font-black uppercase shadow-sm border border-blue-100">
+                              <Award size={14}/> {c.rep} {t.reputation}
                             </div>
                           </div>
-                          <p className="text-gray-600 font-medium leading-relaxed">{c.text}</p>
-                        </div>
+                          <p className="text-gray-600 text-lg font-semibold leading-relaxed italic">"{c.text}"</p>
+                        </motion.div>
                       ))}
                     </div>
                   </section>
-                </>
+                </div>
               )}
 
-              {/* FOOTER CAPTURA IG */}
+              {/* FOOTER CAPTURA (SIN CAMBIOS PERO CON COLOR) */}
               {isCapturing && (
-                <div className="mt-20 pt-10 border-t-4 border-black flex justify-between items-end">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-black text-white px-4 py-1 font-black text-3xl italic">IX</div>
-                    <p className="text-[12px] font-black uppercase tracking-[0.3em]">Infoxity_News</p>
+                <div className="mt-20 pt-10 border-t-[6px] border-black flex justify-between items-end">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-black text-white px-5 py-2 font-black text-4xl italic shadow-lg">IX</div>
+                    <div>
+                      <p className="text-lg font-black uppercase tracking-tighter text-gray-900">Infoxity_News</p>
+                      <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Digital Sovereignty</p>
+                    </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Resistencia Intelectual 2026</p>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Resistencia Intelectual 2026</p>
                   </div>
                 </div>
               )}
@@ -426,7 +432,7 @@ export default function InfoxityApp() {
               {isCapturing && (
                 <button 
                   onClick={() => setIsCapturing(false)}
-                  className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-white text-black px-12 py-5 rounded-full font-black uppercase tracking-[0.2em] shadow-2xl border-4 border-black z-[100] active:scale-95 transition-all"
+                  className="fixed bottom-12 left-1/2 -translate-x-1/2 bg-white text-black px-16 py-6 rounded-full font-black uppercase tracking-[0.2em] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] border-4 border-black z-[100] hover:scale-105 active:scale-95 transition-all"
                 >
                   Finalizar Captura
                 </button>
@@ -437,9 +443,10 @@ export default function InfoxityApp() {
       </main>
 
       {!isCapturing && (
-        <footer className="py-24 border-t border-gray-50 text-center">
-          <div className="bg-black text-white inline-block px-8 py-2 font-black text-3xl italic mb-6">IX</div>
-          <p className="text-[11px] text-gray-400 font-black uppercase tracking-[0.6em] px-4">
+        <footer className="py-32 border-t border-gray-100 text-center bg-white mt-20 relative overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-blue-100 to-transparent" />
+          <div className="bg-black text-white inline-block px-10 py-3 font-black text-4xl italic mb-8 rounded-2xl shadow-xl">IX</div>
+          <p className="text-[12px] text-gray-400 font-black uppercase tracking-[0.8em] px-6 max-w-4xl mx-auto leading-relaxed">
             Infoxity 2026 © Information Sovereignty & Digital Excellence
           </p>
         </footer>
