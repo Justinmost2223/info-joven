@@ -6,10 +6,10 @@ import {
   Shield, MessageSquare, ChevronRight, BarChart3, 
   Instagram, Languages, Award, Bookmark, 
   BookmarkCheck, CheckCircle2, ArrowLeft, Mic2, 
-  TrendingUp, Scale, Star, Menu, X, Share2
+  TrendingUp, Scale, Star, Menu, X, Share2, Send
 } from 'lucide-react';
 
-// --- SISTEMA DE IDIOMAS (SIN CAMBIOS) ---
+// --- SISTEMA DE IDIOMAS ---
 const TRANSLATIONS = {
   es: {
     siteName: "Infoxity",
@@ -33,8 +33,10 @@ const TRANSLATIONS = {
     myLibrary: "Mi Biblioteca",
     noSaved: "No tienes noticias guardadas.",
     voteThanks: "Voto registrado con éxito",
-    placeholder: "Nombre y Apellido...",
-    popular: "Más Destacadas"
+    placeholderName: "Nombre y Apellido...",
+    placeholderIg: "@tu_instagram",
+    popular: "Más Destacadas",
+    share: "Compartir"
   },
   en: {
     siteName: "Infoxity",
@@ -58,12 +60,14 @@ const TRANSLATIONS = {
     myLibrary: "My Library",
     noSaved: "No saved stories yet.",
     voteThanks: "Vote registered successfully",
-    placeholder: "Full Name...",
-    popular: "Trending Now"
+    placeholderName: "Full Name...",
+    placeholderIg: "@your_instagram",
+    popular: "Trending Now",
+    share: "Share"
   }
 };
 
-// --- DATA ESTRUCTURADA (SIN CAMBIOS) ---
+// --- DATA ESTRUCTURADA CON MÁS COMENTARIOS ---
 const INITIAL_NEWS = [
   {
     id: 1,
@@ -76,7 +80,11 @@ const INITIAL_NEWS = [
     sources: ["OPEP+ Energy Report", "Digital Geopolitics Journal"],
     color: "from-orange-500 to-red-600",
     shadow: "shadow-orange-200",
-    comments: [{ id: 1, user: "Mateo Fernández", rep: 1250, text: "La energía manda, las ideologías solo adornan. 🔋" }]
+    comments: [
+      { id: 1, user: "Mateo Fernández", ig: "@mateo_fdz", rep: 1250, text: "La energía manda, las ideologías solo adornan. 🔋" },
+      { id: 101, user: "Elena Vega", ig: "@elvega_geo", rep: 890, text: "Interesante cómo la IA está redibujando el mapa de poder que creíamos muerto." },
+      { id: 102, user: "Santi Tech", ig: "@santi_future", rep: 2100, text: "Texas no puede sostener la demanda de las AGI solo con renovables. Venezuela era el plan B lógico." }
+    ]
   },
   {
     id: 2,
@@ -89,7 +97,11 @@ const INITIAL_NEWS = [
     sources: ["Streaming Analytics 2026", "Variety Insights"],
     color: "from-purple-500 to-indigo-600",
     shadow: "shadow-purple-200",
-    comments: [{ id: 3, user: "Carlos Ruiz", rep: 560, text: "Por fin podré hablar de la serie sin spoilers el primer día. 🙌" }]
+    comments: [
+      { id: 3, user: "Carlos Ruiz", ig: "@cruiz_filmes", rep: 560, text: "Por fin podré hablar de la serie sin spoilers el primer día. 🙌" },
+      { id: 201, user: "Marta Joy", ig: "@marta_series", rep: 1420, text: "Extrañaba las teorías semanales. El binge-watching mató el misterio." },
+      { id: 202, user: "Kevin Smith", ig: "@kev_st", rep: 300, text: "Esto solo lo hacen para que paguemos más meses de suscripción, seamos claros." }
+    ]
   },
   {
     id: 3,
@@ -102,13 +114,18 @@ const INITIAL_NEWS = [
     sources: ["Pew Research Center 2026", "Infoxity Data Hub"],
     color: "from-emerald-500 to-teal-600",
     shadow: "shadow-emerald-200",
-    comments: [{ id: 4, user: "Lucía Méndez", rep: 2100, text: "La eficiencia no tiene color político. Queremos que funcione." }]
+    comments: [
+      { id: 4, user: "Lucía Méndez", ig: "@lucia_vota", rep: 2100, text: "La eficiencia no tiene color político. Queremos que funcione." },
+      { id: 301, user: "Alex Politic", ig: "@alex_real", rep: 950, text: "Los políticos viejos no entienden que ya no compramos promesas, compramos resultados." },
+      { id: 302, user: "Dani G", ig: "@dani_geopol", rep: 120, text: "Pragmatismo radical suena a lo que necesitamos para arreglar la vivienda de una vez." }
+    ]
   }
 ];
 
 export default function InfoxityApp() {
-  const [user, setUser] = useState<{name: string, rep: number} | null>(null);
+  const [user, setUser] = useState<{name: string, ig: string, rep: number} | null>(null);
   const [nameInput, setNameInput] = useState("");
+  const [igInput, setIgInput] = useState("");
   const [lang, setLang] = useState<'es' | 'en'>('es');
   const [news, setNews] = useState(INITIAL_NEWS);
   const [selected, setSelected] = useState<any>(null);
@@ -118,12 +135,32 @@ export default function InfoxityApp() {
   const [commentText, setCommentText] = useState("");
   const [readers, setReaders] = useState(4520);
 
-  const t = TRANSLATIONS[lang];
-
+  // EFECTO DE PERSISTENCIA: Carga los datos al iniciar
   useEffect(() => {
+    const savedUser = localStorage.getItem('infoxity_user');
+    if (savedUser) setUser(JSON.parse(savedUser));
+
+    const savedVotes = localStorage.getItem('infoxity_votes');
+    if (savedVotes) setVotedPolls(JSON.parse(savedVotes));
+
     const interval = setInterval(() => setReaders(p => p + (Math.floor(Math.random()*21)-10)), 3000);
     return () => clearInterval(interval);
   }, []);
+
+  const t = TRANSLATIONS[lang];
+
+  const handleLogin = () => {
+    if (nameInput) {
+      const newUser = { name: nameInput, ig: igInput || "@anonimo", rep: 100 };
+      setUser(newUser);
+      localStorage.setItem('infoxity_user', JSON.stringify(newUser));
+    }
+  };
+
+  const shareOnWhatsApp = (item: any) => {
+    const text = `¡Mira esta noticia en Infoxity! 🛡️\n\n*${item.title}*\n"${item.context}"\n\nLeelo aquí: ${window.location.href}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  };
 
   const toggleSave = (id: number) => {
     setSavedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
@@ -140,7 +177,9 @@ export default function InfoxityApp() {
       return n;
     });
     setNews(updatedNews);
-    setVotedPolls([...votedPolls, newsId]);
+    const newVotedPolls = [...votedPolls, newsId];
+    setVotedPolls(newVotedPolls);
+    localStorage.setItem('infoxity_votes', JSON.stringify(newVotedPolls));
   };
 
   const savedNews = useMemo(() => news.filter(n => savedIds.includes(n.id)), [news, savedIds]);
@@ -152,13 +191,20 @@ export default function InfoxityApp() {
           <div className="bg-gradient-to-br from-blue-600 to-indigo-800 text-white inline-block px-7 py-2 font-black text-4xl italic mb-8 rounded-2xl shadow-lg shadow-blue-500/20">IX</div>
           <h1 className="text-3xl font-black mb-4 text-gray-900 tracking-tight">{t.welcome}</h1>
           <p className="text-gray-500 text-sm mb-10 leading-relaxed font-medium">{t.onboarding}</p>
-          <input 
-            type="text" placeholder={t.placeholder} 
-            className="w-full p-5 rounded-2xl bg-white border-2 border-gray-100 mb-6 font-bold text-center outline-none focus:border-blue-500 focus:ring-4 ring-blue-500/10 transition-all shadow-inner"
-            onChange={(e) => setNameInput(e.target.value)}
-          />
+          <div className="space-y-4 mb-6">
+            <input 
+              type="text" placeholder={t.placeholderName} 
+              className="w-full p-5 rounded-2xl bg-white border-2 border-gray-100 font-bold text-center outline-none focus:border-blue-500 focus:ring-4 ring-blue-500/10 transition-all shadow-inner"
+              onChange={(e) => setNameInput(e.target.value)}
+            />
+            <input 
+              type="text" placeholder={t.placeholderIg} 
+              className="w-full p-5 rounded-2xl bg-white border-2 border-gray-100 font-bold text-center outline-none focus:border-pink-500 focus:ring-4 ring-pink-500/10 transition-all shadow-inner"
+              onChange={(e) => setIgInput(e.target.value)}
+            />
+          </div>
           <button 
-            onClick={() => nameInput && setUser({ name: nameInput, rep: 100 })}
+            onClick={handleLogin}
             className="w-full bg-gradient-to-r from-gray-900 to-black text-white p-5 rounded-2xl font-black uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-xl"
           >
             {t.actionButton}
@@ -171,7 +217,6 @@ export default function InfoxityApp() {
   return (
     <div className={`min-h-screen transition-all duration-700 ${isCapturing ? 'bg-black p-0' : 'bg-[#fafafa]'}`}>
       
-      {/* HEADER DINÁMICO */}
       {!isCapturing && (
         <header className="fixed top-0 left-0 w-full bg-white/70 backdrop-blur-2xl z-50 px-6 md:px-12 py-5 border-b border-gray-100 flex justify-between items-center">
           <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setSelected(null)}>
@@ -197,7 +242,6 @@ export default function InfoxityApp() {
           {!selected ? (
             <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-20">
               
-              {/* BIBLIOTECA VIVA */}
               {savedNews.length > 0 && (
                 <section>
                   <h3 className="text-[10px] font-black tracking-[0.5em] text-blue-600 uppercase mb-8 flex items-center gap-2">
@@ -218,7 +262,6 @@ export default function InfoxityApp() {
                 </section>
               )}
 
-              {/* HERO VIBRANTE */}
               <section className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 <div className="lg:col-span-8 bg-gradient-to-br from-gray-900 via-black to-blue-950 text-white p-12 md:p-20 rounded-[4rem] relative overflow-hidden flex flex-col justify-end min-h-[500px] shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)] border-t border-white/10">
                   <div className="absolute -top-10 -right-10 text-white/5 rotate-12 scale-150"><Shield size={350} /></div>
@@ -245,7 +288,6 @@ export default function InfoxityApp() {
                 </div>
               </section>
 
-              {/* GRID PRINCIPAL CON COLORES */}
               <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {news.map(n => (
                   <motion.div 
@@ -259,9 +301,14 @@ export default function InfoxityApp() {
                       <p className="text-gray-500 text-base italic font-semibold leading-relaxed">"{n.context}"</p>
                     </div>
                     <div className="flex justify-between items-center pt-8 border-t border-gray-100 mt-10 relative z-10">
-                      <button onClick={() => toggleSave(n.id)} className="w-12 h-12 flex items-center justify-center rounded-2xl bg-gray-50 transition-all active:scale-125 hover:bg-gray-100">
-                        {savedIds.includes(n.id) ? <BookmarkCheck className="text-blue-600" size={24} /> : <Bookmark className="text-gray-300" size={24} />}
-                      </button>
+                      <div className="flex gap-2">
+                        <button onClick={() => toggleSave(n.id)} className="w-12 h-12 flex items-center justify-center rounded-2xl bg-gray-50 transition-all active:scale-125 hover:bg-gray-100">
+                          {savedIds.includes(n.id) ? <BookmarkCheck className="text-blue-600" size={24} /> : <Bookmark className="text-gray-300" size={24} />}
+                        </button>
+                        <button onClick={() => shareOnWhatsApp(n)} className="w-12 h-12 flex items-center justify-center rounded-2xl bg-gray-50 transition-all hover:bg-green-50 text-green-600">
+                          <Share2 size={20} />
+                        </button>
+                      </div>
                       <button onClick={() => setSelected(n)} className="w-12 h-12 bg-black text-white rounded-2xl flex items-center justify-center hover:bg-blue-600 hover:-rotate-12 transition-all shadow-lg shadow-black/10"><ChevronRight size={22}/></button>
                     </div>
                   </motion.div>
@@ -279,8 +326,8 @@ export default function InfoxityApp() {
                     <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" /> {t.back}
                   </button>
                   <div className="flex gap-4">
-                    <button onClick={() => toggleSave(selected.id)} className="w-12 h-12 bg-white rounded-2xl border border-gray-100 flex items-center justify-center shadow-md active:scale-125 transition-all">
-                      {savedIds.includes(selected.id) ? <BookmarkCheck size={24} className="text-blue-600" /> : <Bookmark size={24} className="text-gray-300" />}
+                    <button onClick={() => shareOnWhatsApp(selected)} className="w-12 h-12 bg-white rounded-2xl border border-gray-100 flex items-center justify-center shadow-md text-green-600">
+                      <Share2 size={20} />
                     </button>
                     <button onClick={() => setIsCapturing(true)} className="flex items-center gap-3 px-8 py-4 bg-black text-white rounded-3xl text-xs font-black uppercase tracking-widest shadow-xl hover:bg-blue-600 transition-all">
                       <Instagram size={20}/> {t.capture}
@@ -310,7 +357,7 @@ export default function InfoxityApp() {
 
               {!isCapturing && (
                 <div className="space-y-20">
-                  {/* AUDITORÍA MODERNA */}
+                  {/* AUDITORÍA */}
                   <div className="p-12 bg-white rounded-[4rem] border border-gray-100 shadow-xl">
                     <h5 className="text-[11px] font-black uppercase tracking-[0.4em] mb-12 flex items-center gap-3 text-gray-400">
                       <BarChart3 size={20} className="text-blue-600"/> {t.biasAnalysis}
@@ -330,7 +377,7 @@ export default function InfoxityApp() {
                     </div>
                   </div>
 
-                  {/* ENCUESTA PREMIUM */}
+                  {/* ENCUESTA */}
                   <div className="bg-gradient-to-br from-gray-950 via-black to-blue-950 text-white p-10 md:p-20 rounded-[5rem] relative overflow-hidden shadow-3xl">
                     <div className="absolute top-0 right-0 p-16 opacity-10 rotate-12 scale-150"><Scale size={200}/></div>
                     <h3 className="text-3xl md:text-5xl font-black mb-14 relative z-10 leading-tight">{selected.poll.q}</h3>
@@ -365,16 +412,15 @@ export default function InfoxityApp() {
                         );
                       })}
                     </div>
-                    {votedPolls.includes(selected.id) && (
-                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-12 text-center text-xs font-black uppercase text-blue-400 tracking-[0.5em]">{t.voteThanks}</motion.p>
-                    )}
                   </div>
 
-                  {/* DEBATE COLORIDO */}
+                  {/* DEBATE */}
                   <section className="bg-white p-10 md:p-20 rounded-[5rem] shadow-[0_40px_100px_rgba(0,0,0,0.05)] border border-gray-50">
                     <h3 className="text-4xl font-black mb-16 flex items-center gap-5 italic"><MessageSquare size={40} className="text-blue-600"/> {t.comments}</h3>
                     <div className="flex gap-6 mb-16">
-                      <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-800 text-white rounded-[1.5rem] flex items-center justify-center font-black shrink-0 text-3xl shadow-xl">{user.name[0]}</div>
+                      <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-800 text-white rounded-[1.5rem] flex items-center justify-center font-black shrink-0 text-3xl shadow-xl">
+                        {user.name[0]}
+                      </div>
                       <div className="flex-1">
                         <textarea 
                           placeholder={t.postComment}
@@ -384,15 +430,15 @@ export default function InfoxityApp() {
                         />
                         <button 
                           onClick={() => { if(commentText.trim()) { 
-                            const newItem = { id: Date.now(), user: user.name, rep: user.rep + 15, text: commentText };
+                            const newItem = { id: Date.now(), user: user.name, ig: user.ig, rep: user.rep + 15, text: commentText };
                             const updated = news.map(n => n.id === selected.id ? { ...n, comments: [newItem, ...n.comments] } : n);
                             setNews(updated);
                             setSelected({...selected, comments: [newItem, ...selected.comments]});
                             setCommentText("");
                           }}}
-                          className="mt-8 px-12 py-5 bg-black text-white rounded-full font-black text-sm uppercase tracking-[0.2em] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] hover:bg-blue-600 hover:scale-105 transition-all"
+                          className="mt-8 px-12 py-5 bg-black text-white rounded-full font-black text-sm uppercase tracking-[0.2em] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] hover:bg-blue-600 hover:scale-105 transition-all flex items-center gap-3"
                         >
-                          {t.publish}
+                          <Send size={18}/> {t.publish}
                         </button>
                       </div>
                     </div>
@@ -400,7 +446,10 @@ export default function InfoxityApp() {
                       {selected.comments.map((c: any) => (
                         <motion.div initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} key={c.id} className="p-10 bg-[#fcfcfc] border border-gray-100 rounded-[3.5rem] flex flex-col gap-5 hover:border-blue-200 transition-all shadow-sm">
                           <div className="flex justify-between items-center">
-                            <span className="font-black text-lg text-gray-900 tracking-tight">{c.user}</span>
+                            <div className="flex flex-col">
+                              <span className="font-black text-lg text-gray-900 tracking-tight">{c.user}</span>
+                              <span className="text-xs text-pink-600 font-bold">{c.ig}</span>
+                            </div>
                             <div className="flex items-center gap-2 px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-[10px] font-black uppercase shadow-sm border border-blue-100">
                               <Award size={14}/> {c.rep} {t.reputation}
                             </div>
@@ -413,7 +462,6 @@ export default function InfoxityApp() {
                 </div>
               )}
 
-              {/* FOOTER CAPTURA (SIN CAMBIOS PERO CON COLOR) */}
               {isCapturing && (
                 <div className="mt-20 pt-10 border-t-[6px] border-black flex justify-between items-end">
                   <div className="flex items-center gap-4">
