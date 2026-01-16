@@ -52,7 +52,7 @@ const TRANSLATIONS = {
     comments: "Critical Debate Forum",
     postComment: "Contribute a data-driven argument...",
     capture: "Export for Archive",
-    identityTitle: "The Infoxity Philosophy",
+    identityTitle: "La Philosophy Infoxity",
     identityBody: "We are not an algorithm. We are a hybrid editorial board dedicated to dismantling media noise. We offer in-depth journalism for those who demand the truth without ideological filters.",
     back: "Back to Index",
     featured: "FEATURED ANALYSIS",
@@ -133,7 +133,6 @@ export default function InfoxityApp() {
   const [commentText, setCommentText] = useState("");
   const [readers, setReaders] = useState(4520);
 
-  // EFECTO DE CARGA DE PERSISTENCIA REAL
   useEffect(() => {
     const savedUser = localStorage.getItem('infoxity_user');
     if (savedUser) setUser(JSON.parse(savedUser));
@@ -144,7 +143,6 @@ export default function InfoxityApp() {
     const savedLibrary = localStorage.getItem('infoxity_library');
     if (savedLibrary) setSavedIds(JSON.parse(savedLibrary));
 
-    // Persistencia de comentarios dinámicos
     const savedComments = localStorage.getItem('infoxity_global_comments');
     if (savedComments) {
       const parsedComments = JSON.parse(savedComments);
@@ -160,25 +158,23 @@ export default function InfoxityApp() {
 
   const t = TRANSLATIONS[lang];
 
-  // --- MODIFICACIÓN PARA LA BASE DE DATOS (FORMSPREE) ---
+  // --- CONEXIÓN CONFIGURADA CON TU ENLACE ---
   const handleLogin = async () => {
     if (nameInput) {
-      // 1. Enviamos el nombre e IG a Formspree
       try {
-        await fetch("https://formspree.io/f/2915445841474879054", {
+        await fetch("https://formspree.io/f/mqeeawor", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 
-            nombre_completo: nameInput, 
+            nombre_usuario: nameInput, 
             instagram: igInput || "No proporcionado",
-            timestamp: new Date().toISOString()
+            fecha_registro: new Date().toLocaleString()
           }),
         });
       } catch (err) {
-        console.error("Error en el envío de datos");
+        console.error("Error al guardar en base de datos");
       }
 
-      // 2. Ejecutamos tu lógica original de entrada
       const newUser = { name: nameInput, ig: igInput || "@anonimo", rep: 150 };
       setUser(newUser);
       localStorage.setItem('infoxity_user', JSON.stringify(newUser));
