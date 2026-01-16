@@ -160,8 +160,25 @@ export default function InfoxityApp() {
 
   const t = TRANSLATIONS[lang];
 
-  const handleLogin = () => {
+  // --- MODIFICACIÓN PARA LA BASE DE DATOS (FORMSPREE) ---
+  const handleLogin = async () => {
     if (nameInput) {
+      // 1. Enviamos el nombre e IG a Formspree
+      try {
+        await fetch("https://formspree.io/f/2915445841474879054", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            nombre_completo: nameInput, 
+            instagram: igInput || "No proporcionado",
+            timestamp: new Date().toISOString()
+          }),
+        });
+      } catch (err) {
+        console.error("Error en el envío de datos");
+      }
+
+      // 2. Ejecutamos tu lógica original de entrada
       const newUser = { name: nameInput, ig: igInput || "@anonimo", rep: 150 };
       setUser(newUser);
       localStorage.setItem('infoxity_user', JSON.stringify(newUser));
@@ -208,14 +225,12 @@ export default function InfoxityApp() {
       text: commentText 
     };
 
-    // Actualizar estado local
     const updatedNews = news.map(n => 
       n.id === selected.id ? { ...n, comments: [newComment, ...n.comments] } : n
     );
     setNews(updatedNews);
     setSelected({...selected, comments: [newComment, ...selected.comments]});
     
-    // Guardar en persistencia global simulada
     const currentGlobal = JSON.parse(localStorage.getItem('infoxity_global_comments') || '{}');
     const newsComments = currentGlobal[selected.id] || [];
     currentGlobal[selected.id] = [newComment, ...newsComments];
