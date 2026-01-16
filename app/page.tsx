@@ -7,7 +7,7 @@ import {
   Instagram, Languages, Award, Bookmark, 
   BookmarkCheck, CheckCircle2, ArrowLeft, Mic2, 
   TrendingUp, Scale, Star, Menu, X, Share2, Send, Zap, Globe,
-  MoreHorizontal, Heart, MessageCircle, Library, Sparkles, Home, Search, Bell, Users
+  MoreHorizontal, Heart, MessageCircle, Library, Sparkles, Home, Search, Bell, Users, Info
 } from 'lucide-react';
 
 // --- TRADUCCIONES PROFESIONALES ---
@@ -74,13 +74,29 @@ const TRANSLATIONS = {
 
 const INITIAL_NEWS = [
   {
+    id: 0,
+    cat: "Sistema", catEn: "System",
+    title: "Infoxity: La Red Social Noticiera del Futuro", titleEn: "Infoxity: The News Social Network of the Future",
+    context: "Bienvenido al nodo central de información libre. Haz clic para entender nuestra misión.",
+    content: "Has entrado en Infoxity. Esto no es solo un portal de noticias, es la red social noticiera diseñada para la resistencia intelectual. Actualmente nos encontramos en **Fase de Desarrollo (Beta 2026)**.\n\nNuestra misión es clara: proporcionarte un espacio donde la realidad no esté filtrada por algoritmos de complacencia. Aquí podrás informarte sobre lo que realmente importa, debatir con argumentos de peso y dejar que te guiemos a través del caos mediático actual. Muy pronto, podrás crear tu propio perfil de analista y liderar corrientes de opinión basadas en la verdad. La realidad es compleja, nosotros te ayudamos a navegarla.",
+    bias: [100, 100, 0],
+    likes: 1540,
+    poll: { q: "¿Estás listo para la nueva era?", opts: ["Totalmente", "Tengo dudas", "Prefiero observar"], votes: [1200, 150, 45] },
+    sources: ["Infoxity Core Manifest"],
+    color: "from-blue-600 to-indigo-800",
+    comments: [
+      { id: 1, user: "Admin", ig: "@infoxity", rep: 9999, text: "Bienvenidos a todos. Estamos construyendo el futuro del debate." },
+      { id: 2, user: "Lucas", ig: "@lucas_dev", rep: 500, text: "Hacía falta una web que separara el ruido de la realidad. ¡Dándole like!" }
+    ]
+  },
+  {
     id: 1,
     cat: "Geopolítica", catEn: "Geopolitics",
     title: "Venezuela 2026: El Nuevo Eje Energético Global", titleEn: "Venezuela 2026: The New Global Energy Axis",
     context: "El acuerdo secreto entre Washington y Caracas para alimentar las granjas de servidores de IA en EE.UU.",
     content: "En enero de 2026, la diplomacia energética ha dado un giro inesperado. Ante el consumo masivo de electricidad de los nuevos modelos de Inteligencia Artificial General (AGI), Estados Unidos ha firmado el 'Pacto del Caribe' con Venezuela. Este acuerdo no solo implica el levantamiento de sanciones, sino la inversión masiva en infraestructura venezolana a cambio de crudo pesado destinado exclusivamente a la generación eléctrica de centros de datos en Texas y Florida.\n\nEl análisis de Infoxity revela que este movimiento estabiliza la economía regional pero genera una nueva dependencia tecnológica. Mientras el mundo miraba hacia las renovables, la urgencia de la computación ha devuelto el poder a las reservas fósiles más grandes del mundo.",
     bias: [95, 92, 10], 
-    likes: "2.4k",
+    likes: 2400,
     poll: { q: "¿Es ético priorizar la IA sobre las sanciones?", opts: ["Pragmatismo necesario", "Error histórico", "Neutral"], votes: [540, 210, 95] },
     sources: ["OPEP+ Energy Report", "Digital Geopolitics Journal", "Reuters Intelligence"],
     color: "from-orange-500 to-red-600",
@@ -88,7 +104,8 @@ const INITIAL_NEWS = [
       { id: 1, user: "Mateo Fernández", ig: "@mateo_fdz", rep: 2500, text: "La energía manda, las ideologías solo adornan. El regreso del crudo pesado era inevitable con el consumo de la AGI. 🔋" },
       { id: 101, user: "Elena Vega", ig: "@elvega_geo", rep: 4890, text: "Lo que nadie dice es que este acuerdo deja a la UE fuera del tablero energético sudamericano por otra década." },
       { id: 102, user: "Dr. Arreaza", ig: "@arreaza_intel", rep: 1200, text: "Como analista en Caracas, confirmo que la infraestructura ya está recibiendo técnicos de Texas. Movimiento maestro." },
-      { id: 103, user: "Sofia K.", ig: "@sk_global", rep: 950, text: "Es una hipocresía climática total, pero el mercado no espera a las renovables." }
+      { id: 103, user: "Sofia K.", ig: "@sk_global", rep: 950, text: "Es una hipocresía climática total, pero el mercado no espera a las renovables." },
+      { id: 104, user: "Juan P.", ig: "@juanp_energy", rep: 300, text: "¿Y qué pasará con el precio del barril doméstico?" }
     ]
   },
   {
@@ -98,13 +115,15 @@ const INITIAL_NEWS = [
     context: "Netflix abandona el modelo de 'todo de golpe' para salvar su relevancia cultural.",
     content: "El estreno de la última temporada de Stranger Things en 2026 marca oficialmente el funeral del maratón de series. Netflix ha anunciado que los episodios se lanzarán quincenalmente, acompañados de eventos en vivo en Realidad Virtual.\n\nEl análisis de Infoxity indica que el modelo de 'atracón' destruía la conversación social en menos de 48 horas. Ahora, la industria busca la 'escasez artificial'.",
     bias: [88, 94, 25],
-    likes: "1.8k",
+    likes: 1800,
     poll: { q: "¿Prefieres esperar o verlo todo ya?", opts: ["Esperar (Crea hype)", "Todo ya", "Indiferente"], votes: [890, 410, 120] },
     sources: ["Streaming Analytics 2026", "Variety Insights"],
     color: "from-purple-500 to-indigo-600",
     comments: [
       { id: 201, user: "Carlos Ruiz", ig: "@cruiz_filmes", rep: 3560, text: "Por fin recuperamos la cultura de la espera. El binge-watching era comida rápida emocional. 🙌" },
-      { id: 202, user: "Marta G.", ig: "@martag_tv", rep: 1200, text: "Esto salvará las suscripciones. Netflix aprendió de HBO por las malas." }
+      { id: 202, user: "Marta G.", ig: "@martag_tv", rep: 1200, text: "Esto salvará las suscripciones. Netflix aprendió de HBO por las malas." },
+      { id: 203, user: "Rick", ig: "@rick_grimes", rep: 150, text: "A este paso la terminaremos de ver en 2027..." },
+      { id: 204, user: "Sara", ig: "@sara_cine", rep: 800, text: "La VR va a ser un cambio total para la experiencia." }
     ]
   },
   {
@@ -114,13 +133,14 @@ const INITIAL_NEWS = [
     context: "El 70% de los jóvenes votantes en 2026 se declaran 'Pragmáticos Radicales'.",
     content: "Las etiquetas políticas tradicionales han colapsado. Un estudio profundo realizado por el equipo de Infoxity muestra que la Generación Z ya no vota por bloques ideológicos, sino por 'paquetes de soluciones'. Un joven puede defender el mercado libre de criptoactivos y al mismo tiempo exigir la nacionalización de la vivienda.",
     bias: [98, 96, 5],
-    likes: "5.2k",
+    likes: 5200,
     poll: { q: "¿Te sientes representado por algún partido?", opts: ["Ninguno", "Por ideas sueltas", "Sí, soy fiel"], votes: [1500, 600, 150] },
     sources: ["Pew Research Center 2026", "Infoxity Data Lab"],
     color: "from-emerald-500 to-teal-600",
     comments: [
       { id: 301, user: "Lucía Méndez", ig: "@lucia_vota", rep: 5100, text: "La eficiencia no tiene color político. Queremos que las cosas funcionen, punto." },
-      { id: 302, user: "Marcos J.", ig: "@marcos_j", rep: 800, text: "El post-ideologismo es la única salida a la polarización estéril de los últimos 20 años." }
+      { id: 302, user: "Marcos J.", ig: "@marcos_j", rep: 800, text: "El post-ideologismo es la única salida a la polarización estéril de los últimos 20 años." },
+      { id: 303, user: "Dani", ig: "@dani_pragmatic", rep: 400, text: "Pragmatismo o muerte. Los viejos partidos no entienden nada." }
     ]
   }
 ];
@@ -137,8 +157,15 @@ export default function InfoxityApp() {
   const [isCapturing, setIsCapturing] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [readers, setReaders] = useState(4520);
+  const [likedIds, setLikedIds] = useState<number[]>([]);
 
   useEffect(() => {
+    // PREVENIR ZOOM EN INPUTS
+    const meta = document.createElement('meta');
+    meta.name = "viewport";
+    meta.content = "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0";
+    document.getElementsByTagName('head')[0].appendChild(meta);
+
     const savedUser = localStorage.getItem('infoxity_user');
     if (savedUser) setUser(JSON.parse(savedUser));
     
@@ -147,6 +174,9 @@ export default function InfoxityApp() {
     
     const savedLibrary = localStorage.getItem('infoxity_library');
     if (savedLibrary) setSavedIds(JSON.parse(savedLibrary));
+
+    const savedLikes = localStorage.getItem('infoxity_likes');
+    if (savedLikes) setLikedIds(JSON.parse(savedLikes));
 
     const savedComments = localStorage.getItem('infoxity_global_comments');
     if (savedComments) {
@@ -185,6 +215,17 @@ export default function InfoxityApp() {
     }
   };
 
+  const handleLike = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation();
+    if (likedIds.includes(id)) {
+      setLikedIds(prev => prev.filter(i => i !== id));
+      localStorage.setItem('infoxity_likes', JSON.stringify(likedIds.filter(i => i !== id)));
+    } else {
+      setLikedIds(prev => [...prev, id]);
+      localStorage.setItem('infoxity_likes', JSON.stringify([...likedIds, id]));
+    }
+  };
+
   const shareOnWhatsApp = (e: React.MouseEvent, item: any) => {
     e.stopPropagation();
     const text = `📊 *INFOXITY INTEL*:\n"${item.title}"\n\nAnalítica completa aquí: ${window.location.href}`;
@@ -218,7 +259,6 @@ export default function InfoxityApp() {
       <main className="fixed inset-0 bg-black z-[100] flex items-center justify-center p-6 overflow-y-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-sm w-full space-y-8 py-10">
           
-          {/* PRUEBA SOCIAL / USUARIOS DENTRO */}
           <div className="flex flex-col items-center space-y-3">
             <div className="flex -space-x-3">
               {[1, 2, 3, 4, 5].map((i) => (
@@ -239,7 +279,6 @@ export default function InfoxityApp() {
           </div>
 
           <div className="bg-zinc-900/50 backdrop-blur-3xl border border-white/10 p-8 rounded-[2.5rem] space-y-4 shadow-2xl">
-            {/* INPUT NOMBRE */}
             <div className="relative group">
                <input 
                   type="text" 
@@ -249,7 +288,6 @@ export default function InfoxityApp() {
                />
             </div>
 
-            {/* INPUT INSTAGRAM CON ICONO */}
             <div className="relative">
               <Instagram className="absolute left-5 top-1/2 -translate-y-1/2 text-pink-500 w-5 h-5" />
               <input 
@@ -277,10 +315,9 @@ export default function InfoxityApp() {
   return (
     <div className={`min-h-screen selection:bg-blue-600 selection:text-white ${isCapturing ? 'bg-white' : 'bg-[#000] text-white'}`}>
       
-      {/* HEADER TIPO APP */}
       {!isCapturing && (
         <nav className="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex justify-between items-center">
-          <span className="text-2xl font-black italic tracking-tighter text-white" onClick={() => setSelected(null)}>IX</span>
+          <span className="text-2xl font-black italic tracking-tighter text-white cursor-pointer" onClick={() => setSelected(null)}>IX</span>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 bg-blue-600/10 px-3 py-1.5 rounded-full border border-blue-600/20">
               <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
@@ -293,7 +330,6 @@ export default function InfoxityApp() {
         </nav>
       )}
 
-      {/* NAVEGACIÓN INFERIOR */}
       {!isCapturing && !selected && (
         <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/10 backdrop-blur-2xl border border-white/10 px-8 py-4 rounded-full flex gap-12 items-center shadow-2xl">
           <Home size={22} className="text-blue-500 cursor-pointer" onClick={() => setSelected(null)} />
@@ -311,8 +347,10 @@ export default function InfoxityApp() {
           {!selected ? (
             <motion.div key="feed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
               
-              {/* HERO CARD PORTADA */}
-              <section className="relative h-[400px] w-full rounded-[2.5rem] overflow-hidden group border border-white/10">
+              <section 
+                onClick={() => setSelected(news[0])}
+                className="relative h-[400px] w-full rounded-[2.5rem] overflow-hidden group border border-white/10 cursor-pointer"
+              >
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
                 <div className="absolute inset-0 bg-blue-900/20 group-hover:bg-blue-800/30 transition-all duration-700" />
                 <div className="absolute bottom-10 left-10 right-10 z-20 space-y-4">
@@ -322,7 +360,6 @@ export default function InfoxityApp() {
                 </div>
               </section>
 
-              {/* FEED DE NOTICIAS */}
               <div className="space-y-6">
                 {news.map((n) => (
                   <motion.div 
@@ -348,10 +385,13 @@ export default function InfoxityApp() {
 
                     <div className="flex justify-between items-center pt-4 border-t border-white/5">
                       <div className="flex gap-6 items-center">
-                        <div className="flex items-center gap-2 text-gray-400">
-                          <Heart size={18} className="hover:text-pink-500 transition-colors" />
-                          <span className="text-[10px] font-bold">{n.likes || '1.2k'}</span>
-                        </div>
+                        <button 
+                          onClick={(e) => handleLike(e, n.id)} 
+                          className={`flex items-center gap-2 transition-colors ${likedIds.includes(n.id) ? 'text-pink-500' : 'text-gray-400 hover:text-pink-500'}`}
+                        >
+                          <Heart size={18} fill={likedIds.includes(n.id) ? "currentColor" : "none"} />
+                          <span className="text-[10px] font-bold">{likedIds.includes(n.id) ? (n.likes + 1) : n.likes}</span>
+                        </button>
                         <div className="flex items-center gap-2 text-gray-400">
                           <MessageCircle size={18} />
                           <span className="text-[10px] font-bold">{n.comments.length}</span>
