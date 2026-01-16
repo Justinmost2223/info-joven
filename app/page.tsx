@@ -7,7 +7,7 @@ import {
   Instagram, Languages, Award, Bookmark, 
   BookmarkCheck, CheckCircle2, ArrowLeft, Mic2, 
   TrendingUp, Scale, Star, Menu, X, Share2, Send, Zap, Globe,
-  MoreHorizontal, Heart, MessageCircle, Library, Sparkles
+  MoreHorizontal, Heart, MessageCircle, Library, Sparkles, Home, Search, Bell, Users
 } from 'lucide-react';
 
 // --- TRADUCCIONES PROFESIONALES ---
@@ -34,11 +34,12 @@ const TRANSLATIONS = {
     myLibrary: "Archivo Personal",
     noSaved: "No hay registros guardados.",
     voteThanks: "Voto procesado",
-    placeholderName: "Nombre completo...",
-    placeholderIg: "@usuario_verificado",
+    placeholderName: "Tu nombre o alias...",
+    placeholderIg: "Instagram (ej: @usuario)",
     popular: "Tendencias Globales",
     share: "Compartir",
-    shareWa: "WhatsApp"
+    shareWa: "WhatsApp",
+    socialProof: "Ya dentro del sistema:"
   },
   en: {
     siteName: "Infoxity",
@@ -63,10 +64,11 @@ const TRANSLATIONS = {
     noSaved: "No records found.",
     voteThanks: "Vote processed",
     placeholderName: "Full name...",
-    placeholderIg: "@verified_user",
+    placeholderIg: "@instagram_user",
     popular: "Global Trends",
     share: "Share",
-    shareWa: "WhatsApp"
+    shareWa: "WhatsApp",
+    socialProof: "Already inside:"
   }
 };
 
@@ -78,6 +80,7 @@ const INITIAL_NEWS = [
     context: "El acuerdo secreto entre Washington y Caracas para alimentar las granjas de servidores de IA en EE.UU.",
     content: "En enero de 2026, la diplomacia energética ha dado un giro inesperado. Ante el consumo masivo de electricidad de los nuevos modelos de Inteligencia Artificial General (AGI), Estados Unidos ha firmado el 'Pacto del Caribe' con Venezuela. Este acuerdo no solo implica el levantamiento de sanciones, sino la inversión masiva en infraestructura venezolana a cambio de crudo pesado destinado exclusivamente a la generación eléctrica de centros de datos en Texas y Florida.\n\nEl análisis de Infoxity revela que este movimiento estabiliza la economía regional pero genera una nueva dependencia tecnológica. Mientras el mundo miraba hacia las renovables, la urgencia de la computación ha devuelto el poder a las reservas fósiles más grandes del mundo.",
     bias: [95, 92, 10], 
+    likes: "2.4k",
     poll: { q: "¿Es ético priorizar la IA sobre las sanciones?", opts: ["Pragmatismo necesario", "Error histórico", "Neutral"], votes: [540, 210, 95] },
     sources: ["OPEP+ Energy Report", "Digital Geopolitics Journal", "Reuters Intelligence"],
     color: "from-orange-500 to-red-600",
@@ -95,6 +98,7 @@ const INITIAL_NEWS = [
     context: "Netflix abandona el modelo de 'todo de golpe' para salvar su relevancia cultural.",
     content: "El estreno de la última temporada de Stranger Things en 2026 marca oficialmente el funeral del maratón de series. Netflix ha anunciado que los episodios se lanzarán quincenalmente, acompañados de eventos en vivo en Realidad Virtual.\n\nEl análisis de Infoxity indica que el modelo de 'atracón' destruía la conversación social en menos de 48 horas. Ahora, la industria busca la 'escasez artificial'.",
     bias: [88, 94, 25],
+    likes: "1.8k",
     poll: { q: "¿Prefieres esperar o verlo todo ya?", opts: ["Esperar (Crea hype)", "Todo ya", "Indiferente"], votes: [890, 410, 120] },
     sources: ["Streaming Analytics 2026", "Variety Insights"],
     color: "from-purple-500 to-indigo-600",
@@ -110,6 +114,7 @@ const INITIAL_NEWS = [
     context: "El 70% de los jóvenes votantes en 2026 se declaran 'Pragmáticos Radicales'.",
     content: "Las etiquetas políticas tradicionales han colapsado. Un estudio profundo realizado por el equipo de Infoxity muestra que la Generación Z ya no vota por bloques ideológicos, sino por 'paquetes de soluciones'. Un joven puede defender el mercado libre de criptoactivos y al mismo tiempo exigir la nacionalización de la vivienda.",
     bias: [98, 96, 5],
+    likes: "5.2k",
     poll: { q: "¿Te sientes representado por algún partido?", opts: ["Ninguno", "Por ideas sueltas", "Sí, soy fiel"], votes: [1500, 600, 150] },
     sources: ["Pew Research Center 2026", "Infoxity Data Lab"],
     color: "from-emerald-500 to-teal-600",
@@ -158,7 +163,6 @@ export default function InfoxityApp() {
 
   const t = TRANSLATIONS[lang];
 
-  // --- CONEXIÓN CONFIGURADA CON TU ENLACE ---
   const handleLogin = async () => {
     if (nameInput) {
       try {
@@ -175,7 +179,7 @@ export default function InfoxityApp() {
         console.error("Error al guardar en base de datos");
       }
 
-      const newUser = { name: nameInput, ig: igInput || "@anonimo", rep: 150 };
+      const newUser = { name: nameInput, ig: igInput.startsWith('@') ? igInput : `@${igInput}` || "@anonimo", rep: 150 };
       setUser(newUser);
       localStorage.setItem('infoxity_user', JSON.stringify(newUser));
     }
@@ -194,69 +198,76 @@ export default function InfoxityApp() {
     localStorage.setItem('infoxity_library', JSON.stringify(newSaved));
   };
 
-  const handleVote = (newsId: number, optIndex: number) => {
-    if (votedPolls.includes(newsId)) return;
-    const updatedNews = news.map(n => {
-      if (n.id === newsId) {
-        const newVotes = [...n.poll.votes];
-        newVotes[optIndex] += 1;
-        return { ...n, poll: { ...n.poll, votes: newVotes } };
-      }
-      return n;
-    });
-    setNews(updatedNews);
-    const newVotedPolls = [...votedPolls, newsId];
-    setVotedPolls(newVotedPolls);
-    localStorage.setItem('infoxity_votes', JSON.stringify(newVotedPolls));
-  };
-
   const handlePostComment = () => {
     if(!commentText.trim() || !user) return;
-    
-    const newComment = { 
-      id: Date.now(), 
-      user: user.name, 
-      ig: user.ig, 
-      rep: user.rep, 
-      text: commentText 
-    };
-
-    const updatedNews = news.map(n => 
-      n.id === selected.id ? { ...n, comments: [newComment, ...n.comments] } : n
-    );
+    const newComment = { id: Date.now(), user: user.name, ig: user.ig, rep: user.rep, text: commentText };
+    const updatedNews = news.map(n => n.id === selected.id ? { ...n, comments: [newComment, ...n.comments] } : n);
     setNews(updatedNews);
     setSelected({...selected, comments: [newComment, ...selected.comments]});
-    
     const currentGlobal = JSON.parse(localStorage.getItem('infoxity_global_comments') || '{}');
     const newsComments = currentGlobal[selected.id] || [];
     currentGlobal[selected.id] = [newComment, ...newsComments];
     localStorage.setItem('infoxity_global_comments', JSON.stringify(currentGlobal));
-    
     setCommentText("");
-  };
-
-  const getRepColor = (rep: number) => {
-    if (rep >= 4000) return "text-amber-400"; 
-    if (rep >= 2000) return "text-purple-400"; 
-    return "text-blue-500";
   };
 
   const savedNews = useMemo(() => news.filter(n => savedIds.includes(n.id)), [news, savedIds]);
 
   if (!user) {
     return (
-      <main className="fixed inset-0 bg-black z-[100] flex items-center justify-center p-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-sm w-full space-y-8">
-          <div className="text-center space-y-4">
-            <h1 className="text-6xl font-black italic tracking-tighter text-white">IX</h1>
-            <p className="text-gray-500 text-xs font-bold tracking-[0.3em] uppercase">{t.welcome}</p>
+      <main className="fixed inset-0 bg-black z-[100] flex items-center justify-center p-6 overflow-y-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-sm w-full space-y-8 py-10">
+          
+          {/* PRUEBA SOCIAL / USUARIOS DENTRO */}
+          <div className="flex flex-col items-center space-y-3">
+            <div className="flex -space-x-3">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="w-10 h-10 rounded-full border-2 border-black bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] font-bold">
+                  {String.fromCharCode(64 + i)}
+                </div>
+              ))}
+              <div className="w-10 h-10 rounded-full border-2 border-black bg-zinc-800 flex items-center justify-center text-[10px] font-black text-blue-500">
+                +1k
+              </div>
+            </div>
+            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{t.socialProof}</p>
           </div>
-          <div className="bg-[#111] border border-white/5 p-8 rounded-[2rem] space-y-4 shadow-2xl">
-            <input type="text" placeholder={t.placeholderName} className="w-full bg-black border border-white/10 p-4 rounded-xl text-white outline-none focus:border-white/40 transition-all text-sm" onChange={(e) => setNameInput(e.target.value)} />
-            <input type="text" placeholder={t.placeholderIg} className="w-full bg-black border border-white/10 p-4 rounded-xl text-white outline-none focus:border-white/40 transition-all text-sm" onChange={(e) => setIgInput(e.target.value)} />
-            <button onClick={handleLogin} className="w-full bg-white text-black p-4 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-blue-600 hover:text-white transition-all">
+
+          <div className="text-center space-y-2">
+            <h1 className="text-8xl font-black italic tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">IX</h1>
+            <p className="text-blue-500 text-[10px] font-black tracking-[0.4em] uppercase">{t.welcome}</p>
+          </div>
+
+          <div className="bg-zinc-900/50 backdrop-blur-3xl border border-white/10 p-8 rounded-[2.5rem] space-y-4 shadow-2xl">
+            {/* INPUT NOMBRE */}
+            <div className="relative group">
+               <input 
+                  type="text" 
+                  placeholder={t.placeholderName} 
+                  className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-white outline-none focus:border-blue-500 transition-all text-sm font-medium" 
+                  onChange={(e) => setNameInput(e.target.value)} 
+               />
+            </div>
+
+            {/* INPUT INSTAGRAM CON ICONO */}
+            <div className="relative">
+              <Instagram className="absolute left-5 top-1/2 -translate-y-1/2 text-pink-500 w-5 h-5" />
+              <input 
+                type="text" 
+                placeholder={t.placeholderIg} 
+                className="w-full bg-white/5 border border-white/10 p-5 pl-14 rounded-2xl text-white outline-none focus:border-pink-500 transition-all text-sm font-medium" 
+                onChange={(e) => setIgInput(e.target.value)} 
+              />
+            </div>
+
+            <button onClick={handleLogin} className="w-full bg-blue-600 text-white p-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-blue-700 transition-all shadow-[0_10px_30px_rgba(37,99,235,0.3)] flex items-center justify-center gap-2 group">
               {t.actionButton}
+              <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
+            
+            <p className="text-[9px] text-zinc-500 text-center font-bold uppercase tracking-tighter px-4">
+              Al entrar, te unes al nodo de inteligencia colectiva Infoxity.
+            </p>
           </div>
         </motion.div>
       </main>
@@ -264,208 +275,181 @@ export default function InfoxityApp() {
   }
 
   return (
-    <div className={`min-h-screen selection:bg-white selection:text-black ${isCapturing ? 'bg-white' : 'bg-[#050505] text-white'}`}>
+    <div className={`min-h-screen selection:bg-blue-600 selection:text-white ${isCapturing ? 'bg-white' : 'bg-[#000] text-white'}`}>
       
+      {/* HEADER TIPO APP */}
       {!isCapturing && (
-        <nav className="fixed top-0 left-0 w-full z-50 border-b border-white/5 bg-black/90 backdrop-blur-xl px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-8">
-            <span className="text-3xl font-black italic cursor-pointer tracking-tighter" onClick={() => setSelected(null)}>IX</span>
-            <div className="hidden md:flex gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
-              <span className="hover:text-white cursor-pointer transition-colors">Geopolítica</span>
-              <span className="hover:text-white cursor-pointer transition-colors">Cultura</span>
-              <span className="hover:text-white cursor-pointer transition-colors">Economía</span>
+        <nav className="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex justify-between items-center">
+          <span className="text-2xl font-black italic tracking-tighter text-white" onClick={() => setSelected(null)}>IX</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 bg-blue-600/10 px-3 py-1.5 rounded-full border border-blue-600/20">
+              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+              <span className="text-[10px] font-black uppercase tracking-tighter text-blue-400">{readers}</span>
             </div>
-          </div>
-          <div className="flex items-center gap-6">
-            <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="text-[10px] font-black border border-white/20 px-3 py-1 rounded-full hover:bg-white hover:text-black transition-all">
+            <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="text-[10px] font-black bg-white/5 w-8 h-8 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-all">
               {lang.toUpperCase()}
             </button>
-            <div className="flex items-center gap-2">
-              <Library size={16} className={savedIds.length > 0 ? "text-blue-500" : "text-gray-400"} />
-              <span className="text-[10px] font-black">{savedIds.length}</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full">
-              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-              <span className="text-[9px] font-black uppercase tracking-tighter text-gray-400">{readers} {t.reading}</span>
-            </div>
           </div>
         </nav>
       )}
 
-      <main className={`max-w-screen-xl mx-auto px-4 md:px-10 ${isCapturing ? 'pt-0' : 'pt-28 pb-20'}`}>
+      {/* NAVEGACIÓN INFERIOR */}
+      {!isCapturing && !selected && (
+        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/10 backdrop-blur-2xl border border-white/10 px-8 py-4 rounded-full flex gap-12 items-center shadow-2xl">
+          <Home size={22} className="text-blue-500 cursor-pointer" onClick={() => setSelected(null)} />
+          <Search size={22} className="text-gray-400 cursor-pointer" />
+          <Bell size={22} className="text-gray-400 cursor-pointer" />
+          <div className="relative cursor-pointer" onClick={() => {}}>
+             <Library size={22} className={savedIds.length > 0 ? "text-blue-500" : "text-gray-400"} />
+             {savedIds.length > 0 && <span className="absolute -top-1 -right-1 bg-blue-600 text-[8px] w-4 h-4 flex items-center justify-center rounded-full font-black">{savedIds.length}</span>}
+          </div>
+        </nav>
+      )}
+
+      <main className={`max-w-screen-md mx-auto px-4 ${isCapturing ? 'pt-0' : 'pt-24 pb-32'}`}>
         <AnimatePresence mode="wait">
           {!selected ? (
-            <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-24">
+            <motion.div key="feed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
               
-              {/* BRAND MANIFESTO */}
-              <section className="bg-[#0a0a0a] border border-white/5 p-12 md:p-24 rounded-[3.5rem] space-y-8 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 blur-[100px] group-hover:bg-blue-600/10 transition-all" />
-                <h2 className="text-5xl md:text-8xl font-black tracking-tighter max-w-4xl leading-[0.9]">{t.identityTitle}</h2>
-                <p className="text-gray-400 text-xl md:text-3xl font-medium italic leading-relaxed max-w-4xl border-l-2 border-blue-600 pl-8">
-                  {t.identityBody}
-                </p>
+              {/* HERO CARD PORTADA */}
+              <section className="relative h-[400px] w-full rounded-[2.5rem] overflow-hidden group border border-white/10">
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
+                <div className="absolute inset-0 bg-blue-900/20 group-hover:bg-blue-800/30 transition-all duration-700" />
+                <div className="absolute bottom-10 left-10 right-10 z-20 space-y-4">
+                  <span className="bg-blue-600 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em]">{t.featured}</span>
+                  <h2 className="text-4xl md:text-5xl font-black leading-none tracking-tighter">{t.identityTitle}</h2>
+                  <p className="text-gray-300 text-sm font-medium line-clamp-2 italic">{t.identityBody}</p>
+                </div>
               </section>
 
-              {/* ARCHIVO PERSONAL */}
-              {savedNews.length > 0 && (
-                <section className="space-y-8">
-                  <div className="flex items-center gap-3">
-                    <div className="h-[1px] w-8 bg-blue-600" />
-                    <h3 className="text-[10px] font-black tracking-[0.5em] text-blue-500 uppercase">{t.myLibrary}</h3>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {savedNews.map(n => (
-                      <div key={n.id} onClick={() => setSelected(n)} className="bg-[#0e0e0e] p-8 rounded-[2.5rem] border border-white/5 cursor-pointer hover:border-blue-500/30 transition-all">
-                        <span className="text-[9px] font-black uppercase text-gray-500 mb-4 block tracking-widest">{n.cat}</span>
-                        <h4 className="font-bold text-xl leading-tight">{n.title}</h4>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* GRID EDITORIAL */}
-              <section className="grid grid-cols-1 md:grid-cols-12 gap-16">
+              {/* FEED DE NOTICIAS */}
+              <div className="space-y-6">
                 {news.map((n) => (
-                  <div key={n.id} className="md:col-span-6 group cursor-pointer" onClick={() => setSelected(n)}>
-                    <div className="space-y-6">
-                      <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">{lang === 'es' ? n.cat : n.catEn}</span>
-                        <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-all">
-                           <button onClick={(e) => shareOnWhatsApp(e, n)} className="text-green-500 hover:scale-110 transition-transform"><Share2 size={18} /></button>
-                           <button onClick={(e) => toggleSave(e, n.id)} className="text-white hover:scale-110 transition-transform">
-                             {savedIds.includes(n.id) ? <BookmarkCheck size={18} className="text-blue-500" /> : <Bookmark size={18} />}
-                           </button>
-                        </div>
+                  <motion.div 
+                    key={n.id} 
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setSelected(n)}
+                    className="bg-[#0f0f0f] border border-white/5 rounded-[2rem] p-6 space-y-6 hover:border-white/20 transition-all cursor-pointer group shadow-xl"
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center font-black text-[10px]">IX</div>
+                        <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest">{lang === 'es' ? n.cat : n.catEn}</span>
                       </div>
-                      <h3 className="text-5xl font-black tracking-tighter leading-none group-hover:text-blue-500 transition-colors">
+                      <MoreHorizontal size={18} className="text-gray-600" />
+                    </div>
+
+                    <div className="space-y-3">
+                      <h3 className="text-3xl font-black tracking-tighter leading-tight group-hover:text-blue-500 transition-colors">
                         {lang === 'es' ? n.title : n.titleEn}
                       </h3>
-                      <p className="text-gray-500 text-lg font-medium italic">"{n.context}"</p>
+                      <p className="text-gray-500 text-sm font-medium italic">"{n.context}"</p>
                     </div>
-                  </div>
+
+                    <div className="flex justify-between items-center pt-4 border-t border-white/5">
+                      <div className="flex gap-6 items-center">
+                        <div className="flex items-center gap-2 text-gray-400">
+                          <Heart size={18} className="hover:text-pink-500 transition-colors" />
+                          <span className="text-[10px] font-bold">{n.likes || '1.2k'}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-400">
+                          <MessageCircle size={18} />
+                          <span className="text-[10px] font-bold">{n.comments.length}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-400">
+                          <Zap size={18} />
+                        </div>
+                      </div>
+                      <div className="flex gap-4">
+                        <button onClick={(e) => toggleSave(e, n.id)} className="text-gray-400 hover:text-white">
+                           {savedIds.includes(n.id) ? <BookmarkCheck size={20} className="text-blue-500" /> : <Bookmark size={20} />}
+                        </button>
+                        <button onClick={(e) => shareOnWhatsApp(e, n)} className="text-gray-400 hover:text-green-500">
+                          <Share2 size={20} />
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
                 ))}
-              </section>
+              </div>
 
             </motion.div>
           ) : (
-            <motion.article key="article" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`max-w-3xl mx-auto ${isCapturing ? 'text-black p-12' : ''}`}>
+            <motion.article key="article" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} className={`max-w-2xl mx-auto ${isCapturing ? 'text-black p-12' : ''}`}>
               
               {!isCapturing && (
-                <div className="flex justify-between items-center mb-24">
-                  <button onClick={() => setSelected(null)} className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all">
-                    <ArrowLeft size={18} /> {t.back}
+                <div className="flex justify-between items-center mb-12">
+                  <button onClick={() => setSelected(null)} className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-white">
+                    <ArrowLeft size={20} />
                   </button>
-                  <div className="flex gap-6">
-                    <button onClick={(e) => shareOnWhatsApp(e, selected)} className="bg-green-600/10 text-green-500 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-green-500/10">WhatsApp</button>
-                    <button onClick={() => setIsCapturing(true)} className="bg-white text-black px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all">
-                      {t.capture}
-                    </button>
-                  </div>
+                  <button onClick={() => setIsCapturing(true)} className="bg-white text-black px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">
+                    {t.capture}
+                  </button>
                 </div>
               )}
 
-              <header className="space-y-10 mb-20">
-                <span className="text-[11px] font-black text-blue-500 uppercase tracking-[0.5em]">{lang === 'es' ? selected.cat : selected.catEn}</span>
-                <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.85] italic">{lang === 'es' ? selected.title : selected.titleEn}</h1>
-                <div className="flex items-center justify-between border-y border-white/5 py-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center font-black text-sm">IX</div>
-                    <div>
-                      <p className="text-[11px] font-black uppercase tracking-tighter">Editorial Board</p>
-                      <p className="text-[10px] text-gray-500 uppercase font-bold">JAN 2026 • Curated Intelligence</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-6">
-                    {selected.bias.map((b:number, i:number) => (
-                       <div key={i} className="text-center">
-                         <p className="text-xs font-black">{b}%</p>
-                         <p className="text-[8px] text-gray-500 uppercase font-bold tracking-tighter">{i===0?'Obj':i===1?'Fact':'Bias'}</p>
-                       </div>
-                    ))}
-                  </div>
+              <header className="space-y-6 mb-12 text-center md:text-left">
+                <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">{lang === 'es' ? selected.cat : selected.catEn}</span>
+                <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] italic">{lang === 'es' ? selected.title : selected.titleEn}</h1>
+                
+                <div className="flex items-center gap-4 pt-6 border-t border-white/5">
+                   <div className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center font-black text-xs">IX</div>
+                   <div>
+                     <p className="text-[10px] font-black uppercase">Consejo Editorial</p>
+                     <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Verificado • 2026</p>
+                   </div>
                 </div>
               </header>
 
-              <section className={`prose prose-invert prose-xl font-serif leading-relaxed mb-32 space-y-8 ${isCapturing ? 'text-black' : 'text-gray-300'}`}>
+              <section className={`text-lg md:text-xl font-serif leading-relaxed space-y-8 ${isCapturing ? 'text-black' : 'text-gray-300'}`}>
                 {selected.content.split('\n\n').map((p: string, i: number) => (
-                  <p key={i} className="first-letter:text-6xl first-letter:font-black first-letter:mr-3 first-letter:float-left first-letter:leading-none">{p}</p>
+                  <p key={i} className="first-letter:text-5xl first-letter:font-black first-letter:mr-3 first-letter:float-left first-letter:leading-none">{p}</p>
                 ))}
               </section>
 
               {!isCapturing && (
-                <div className="space-y-32">
-                  {/* SOURCES AUDIT */}
-                  <div className="bg-[#0a0a0a] border border-white/5 p-12 rounded-[3rem] space-y-6">
-                    <div className="flex items-center gap-2 mb-4">
-                      <CheckCircle2 size={18} className="text-blue-500" />
-                      <h4 className="text-[10px] font-black uppercase tracking-[0.3em]">{t.sources}</h4>
-                    </div>
-                    {selected.sources.map((s:string) => (
-                      <div key={s} className="flex justify-between items-center text-xs border-b border-white/5 pb-3">
-                        <span className="text-gray-400 font-bold tracking-tight">{s}</span>
-                        <span className="text-blue-500 font-black text-[9px]">VERIFIED</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* DEBATE FORUM */}
-                  <section className="space-y-16">
-                    <div className="flex justify-between items-center border-b-2 border-white/5 pb-6">
-                      <h3 className="text-4xl font-black italic tracking-tighter">{t.comments}</h3>
-                      <span className="text-[10px] font-black text-gray-500 tracking-[0.2em]">{selected.comments.length} ARGUMENTOS</span>
+                <div className="mt-20 space-y-16">
+                  <section className="space-y-10">
+                    <h3 className="text-2xl font-black italic tracking-tighter border-b border-white/5 pb-4">{t.comments}</h3>
+                    <div className="flex gap-4 items-start">
+                       <div className="w-10 h-10 bg-blue-600 rounded-full flex-shrink-0 flex items-center justify-center font-black text-xs uppercase">{user.name[0]}</div>
+                       <div className="flex-grow relative">
+                          <textarea 
+                            value={commentText}
+                            onChange={(e) => setCommentText(e.target.value)}
+                            placeholder={t.postComment}
+                            className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500 transition-all text-sm min-h-[100px] resize-none"
+                          />
+                          <button onClick={handlePostComment} className="absolute bottom-4 right-4 bg-blue-600 p-2 rounded-xl text-white">
+                            <Send size={18} />
+                          </button>
+                       </div>
                     </div>
 
-                    <div className="space-y-12">
-                      <div className="relative">
-                        <textarea 
-                          value={commentText}
-                          onChange={(e) => setCommentText(e.target.value)}
-                          placeholder={t.postComment}
-                          className="w-full bg-[#0a0a0a] border border-white/10 p-8 rounded-[2.5rem] outline-none focus:border-blue-500/50 transition-all min-h-[150px] text-lg resize-none text-white font-medium"
-                        />
-                        <button 
-                          onClick={handlePostComment}
-                          className="absolute bottom-6 right-6 bg-white text-black p-4 rounded-2xl hover:bg-blue-600 hover:text-white transition-all shadow-2xl"
-                        >
-                          <Send size={24} />
-                        </button>
-                      </div>
-
-                      <div className="space-y-12">
-                        {selected.comments.map((c: any) => (
-                          <div key={c.id} className="group border-l-2 border-white/5 pl-10 relative">
-                            <div className="absolute left-[-2px] top-0 w-0.5 h-0 group-hover:h-full bg-blue-600 transition-all duration-500" />
-                            <div className="flex justify-between items-center mb-4">
-                              <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 bg-blue-600/10 text-blue-500 rounded-full flex items-center justify-center text-xs font-black">
-                                  {c.user[0]}
-                                </div>
-                                <div>
-                                  <span className={`text-sm font-black block tracking-tight ${getRepColor(c.rep)}`}>{c.user}</span>
-                                  <span className="text-[10px] text-pink-500 font-black uppercase tracking-tighter">{c.ig}</span>
-                                </div>
+                    <div className="space-y-8">
+                      {selected.comments.map((c: any) => (
+                        <div key={c.id} className="flex gap-4">
+                           <div className="w-10 h-10 bg-white/5 rounded-full flex-shrink-0 flex items-center justify-center font-black text-xs text-blue-500 uppercase">{c.user[0]}</div>
+                           <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[11px] font-black uppercase tracking-tight">{c.user}</span>
+                                <span className="text-[9px] text-pink-500 font-bold uppercase flex items-center gap-1">
+                                  <Instagram size={8} /> {c.ig}
+                                </span>
                               </div>
-                              <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{c.rep} XP</span>
-                            </div>
-                            <p className="text-gray-300 text-xl leading-relaxed italic font-medium">
-                              "{c.text}"
-                            </p>
-                          </div>
-                        ))}
-                      </div>
+                              <p className="text-gray-400 text-sm leading-relaxed">"{c.text}"</p>
+                           </div>
+                        </div>
+                      ))}
                     </div>
                   </section>
                 </div>
               )}
 
               {isCapturing && (
-                <div className="mt-32 pt-10 border-t-4 border-black flex justify-between items-center italic font-black">
-                  <span className="text-4xl">INFOXITY.</span>
-                  <div className="text-right">
-                    <p className="text-xs uppercase tracking-widest">Resistencia Intelectual</p>
-                    <p className="text-[10px] text-gray-400">© 2026 OFFICIAL ARCHIVE</p>
-                  </div>
+                <div className="mt-32 pt-10 border-t-2 border-black flex justify-between items-center italic font-black">
+                  <span className="text-2xl tracking-tighter">INFOXITY.INTEL</span>
+                  <div className="text-right text-[8px] uppercase tracking-widest text-gray-500">© 2026 Archive</div>
                 </div>
               )}
             </motion.article>
@@ -473,8 +457,8 @@ export default function InfoxityApp() {
         </AnimatePresence>
       </main>
 
-      <footer className="py-24 text-center border-t border-white/5">
-        <p className="text-[11px] font-black tracking-[1.5em] uppercase text-gray-600">Soberanía de la Información</p>
+      <footer className="pb-32 pt-10 text-center opacity-30">
+        <p className="text-[9px] font-black tracking-[1em] uppercase">Infoxity Network</p>
       </footer>
       
       {isCapturing && (
