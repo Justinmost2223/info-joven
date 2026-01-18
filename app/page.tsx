@@ -158,9 +158,6 @@ export default function InfoxityApp() {
   const [commentText, setCommentText] = useState("");
   const [readers, setReaders] = useState(4520);
   const [likedIds, setLikedIds] = useState<number[]>([]);
-  const [showLibrary, setShowLibrary] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     // PREVENIR ZOOM EN INPUTS
@@ -215,15 +212,6 @@ export default function InfoxityApp() {
       const newUser = { name: nameInput, ig: igInput.startsWith('@') ? igInput : `@${igInput}` || "@anonimo", rep: 150 };
       setUser(newUser);
       localStorage.setItem('infoxity_user', JSON.stringify(newUser));
-      
-      // Guardar en lista de todos los usuarios
-      const savedUsers = localStorage.getItem('infoxity_all_users');
-      const usersList = savedUsers ? JSON.parse(savedUsers) : [];
-      const userExists = usersList.some((u: any) => u.name === newUser.name && u.ig === newUser.ig);
-      if (!userExists) {
-        usersList.push(newUser);
-        localStorage.setItem('infoxity_all_users', JSON.stringify(usersList));
-      }
     }
   };
 
@@ -266,29 +254,7 @@ export default function InfoxityApp() {
 
   const savedNews = useMemo(() => news.filter(n => savedIds.includes(n.id)), [news, savedIds]);
 
-  const allCommenters = useMemo(() => {
-    const users = new Set<string>();
-    news.forEach(n => {
-      n.comments.forEach(c => {
-        users.add(JSON.stringify({ name: c.user, ig: c.ig, rep: c.rep }));
-      });
-    });
-    return Array.from(users).map(u => JSON.parse(u));
-  }, [news]);
-
-  const filteredCommenters = useMemo(() => {
-    if (!searchQuery) return [];
-    return allCommenters.filter(u => 
-      u.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      u.ig.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery, allCommenters]);
-
   if (!user) {
-    // Intentar recuperar usuarios guardados
-    const savedUsers = localStorage.getItem('infoxity_all_users');
-    const usersList = savedUsers ? JSON.parse(savedUsers) : [];
-
     return (
       <main className="fixed inset-0 bg-black z-[100] flex items-center justify-center p-6 overflow-y-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-sm w-full space-y-8 py-10">
@@ -311,31 +277,6 @@ export default function InfoxityApp() {
             <h1 className="text-8xl font-black italic tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">IX</h1>
             <p className="text-blue-500 text-[10px] font-black tracking-[0.4em] uppercase">{t.welcome}</p>
           </div>
-
-          {/* Usuarios guardados previos */}
-          {usersList.length > 0 && (
-            <div className="space-y-3">
-              <p className="text-[10px] font-bold text-zinc-400 text-center uppercase tracking-wider">Usuarios Registrados</p>
-              <div className="space-y-2 max-h-32 overflow-y-auto">
-                {usersList.map((u: any, idx: number) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      setUser(u);
-                      localStorage.setItem('infoxity_user', JSON.stringify(u));
-                    }}
-                    className="w-full bg-white/5 border border-white/10 p-4 rounded-xl hover:bg-white/10 transition-all flex items-center gap-3"
-                  >
-                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center font-black text-xs uppercase">{u.name[0]}</div>
-                    <div className="text-left">
-                      <p className="text-xs font-bold text-white">{u.name}</p>
-                      <p className="text-[9px] text-pink-500">{u.ig}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
 
           <div className="bg-zinc-900/50 backdrop-blur-3xl border border-white/10 p-8 rounded-[2.5rem] space-y-4 shadow-2xl">
             <div className="relative group">
@@ -391,11 +332,11 @@ export default function InfoxityApp() {
 
       {!isCapturing && !selected && (
         <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/10 backdrop-blur-2xl border border-white/10 px-8 py-4 rounded-full flex gap-12 items-center shadow-2xl">
-          <Home size={22} className="text-blue-500 cursor-pointer" onClick={() => { setSelected(null); setShowLibrary(false); setShowSearch(false); }} />
-          <Search size={22} className={`${showSearch ? 'text-blue-500' : 'text-gray-400'} cursor-pointer`} onClick={() => { setShowSearch(!showSearch); setShowLibrary(false); setSelected(null); }} />
+          <Home size={22} className="text-blue-500 cursor-pointer" onClick={() => setSelected(null)} />
+          <Search size={22} className="text-gray-400 cursor-pointer" />
           <Bell size={22} className="text-gray-400 cursor-pointer" />
-          <div className="relative cursor-pointer" onClick={() => { setShowLibrary(!showLibrary); setShowSearch(false); setSelected(null); }}>
-             <Library size={22} className={showLibrary || savedIds.length > 0 ? "text-blue-500" : "text-gray-400"} />
+          <div className="relative cursor-pointer" onClick={() => {}}>
+             <Library size={22} className={savedIds.length > 0 ? "text-blue-500" : "text-gray-400"} />
              {savedIds.length > 0 && <span className="absolute -top-1 -right-1 bg-blue-600 text-[8px] w-4 h-4 flex items-center justify-center rounded-full font-black">{savedIds.length}</span>}
           </div>
         </nav>
@@ -403,117 +344,7 @@ export default function InfoxityApp() {
 
       <main className={`max-w-screen-md mx-auto px-4 ${isCapturing ? 'pt-0' : 'pt-24 pb-32'}`}>
         <AnimatePresence mode="wait">
-          {showLibrary ? (
-            <motion.div key="library" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-              <h2 className="text-4xl font-black tracking-tighter italic">{t.myLibrary}</h2>
-              
-              {/* Noticias Guardadas */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-black text-blue-500 uppercase tracking-wider text-[10px]">Guardados</h3>
-                {savedNews.length > 0 ? (
-                  <div className="space-y-6">
-                    {savedNews.map((n) => (
-                      <motion.div 
-                        key={n.id} 
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => { setSelected(n); setShowLibrary(false); }}
-                        className="bg-[#0f0f0f] border border-white/5 rounded-[2rem] p-6 space-y-6 hover:border-white/20 transition-all cursor-pointer group shadow-xl"
-                      >
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center font-black text-[10px]">IX</div>
-                            <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest">{lang === 'es' ? n.cat : n.catEn}</span>
-                          </div>
-                        </div>
-                        <div className="space-y-3">
-                          <h3 className="text-3xl font-black tracking-tighter leading-tight group-hover:text-blue-500 transition-colors">
-                            {lang === 'es' ? n.title : n.titleEn}
-                          </h3>
-                          <p className="text-gray-500 text-sm font-medium italic">"{n.context}"</p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500 italic text-center py-12">{t.noSaved}</p>
-                )}
-              </div>
-
-              {/* Noticias con Me Gusta */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-black text-pink-500 uppercase tracking-wider text-[10px]">Me Gusta</h3>
-                {news.filter(n => likedIds.includes(n.id)).length > 0 ? (
-                  <div className="space-y-6">
-                    {news.filter(n => likedIds.includes(n.id)).map((n) => (
-                      <motion.div 
-                        key={n.id} 
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => { setSelected(n); setShowLibrary(false); }}
-                        className="bg-[#0f0f0f] border border-white/5 rounded-[2rem] p-6 space-y-6 hover:border-white/20 transition-all cursor-pointer group shadow-xl"
-                      >
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-pink-600 rounded-full flex items-center justify-center font-black text-[10px]">
-                              <Heart size={14} fill="white" />
-                            </div>
-                            <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest">{lang === 'es' ? n.cat : n.catEn}</span>
-                          </div>
-                        </div>
-                        <div className="space-y-3">
-                          <h3 className="text-3xl font-black tracking-tighter leading-tight group-hover:text-pink-500 transition-colors">
-                            {lang === 'es' ? n.title : n.titleEn}
-                          </h3>
-                          <p className="text-gray-500 text-sm font-medium italic">"{n.context}"</p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500 italic text-center py-12">No has dado me gusta a ninguna noticia.</p>
-                )}
-              </div>
-            </motion.div>
-          ) : showSearch ? (
-            <motion.div key="search" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-              <div className="space-y-4">
-                <h2 className="text-4xl font-black tracking-tighter italic">Buscar Usuarios</h2>
-                <input 
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Busca por nombre o Instagram..."
-                  className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-white outline-none focus:border-blue-500 transition-all text-sm font-medium"
-                />
-              </div>
-
-              <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl">
-                <p className="text-[10px] text-yellow-500 font-bold uppercase tracking-wide text-center">
-                  ⚠️ Aún no se proporcionarán todos los usuarios. Dentro de poco podrás ver todos los usuarios registrados.
-                </p>
-              </div>
-
-              {searchQuery && (
-                <div className="space-y-4">
-                  {filteredCommenters.length > 0 ? (
-                    filteredCommenters.map((u, idx) => (
-                      <div key={idx} className="bg-[#0f0f0f] border border-white/5 rounded-xl p-5 flex items-center gap-4">
-                        <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center font-black text-sm uppercase">{u.name[0]}</div>
-                        <div>
-                          <p className="text-sm font-black">{u.name}</p>
-                          <p className="text-[10px] text-pink-500 font-bold flex items-center gap-1">
-                            <Instagram size={10} /> {u.ig}
-                          </p>
-                          <p className="text-[9px] text-blue-500 font-bold uppercase">{u.rep} puntos</p>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-gray-500 italic text-center py-12">No se encontraron usuarios con ese criterio.</p>
-                  )}
-                </div>
-              )}
-            </motion.div>
-          ) : !selected ? (
+          {!selected ? (
             <motion.div key="feed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
               
               <section 
@@ -583,3 +414,98 @@ export default function InfoxityApp() {
               </div>
 
             </motion.div>
+          ) : (
+            <motion.article key="article" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} className={`max-w-2xl mx-auto ${isCapturing ? 'text-black p-12' : ''}`}>
+              
+              {!isCapturing && (
+                <div className="flex justify-between items-center mb-12">
+                  <button onClick={() => setSelected(null)} className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-white">
+                    <ArrowLeft size={20} />
+                  </button>
+                  <button onClick={() => setIsCapturing(true)} className="bg-white text-black px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">
+                    {t.capture}
+                  </button>
+                </div>
+              )}
+
+              <header className="space-y-6 mb-12 text-center md:text-left">
+                <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">{lang === 'es' ? selected.cat : selected.catEn}</span>
+                <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] italic">{lang === 'es' ? selected.title : selected.titleEn}</h1>
+                
+                <div className="flex items-center gap-4 pt-6 border-t border-white/5">
+                   <div className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center font-black text-xs">IX</div>
+                   <div>
+                     <p className="text-[10px] font-black uppercase">Consejo Editorial</p>
+                     <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Verificado • 2026</p>
+                   </div>
+                </div>
+              </header>
+
+              <section className={`text-lg md:text-xl font-serif leading-relaxed space-y-8 ${isCapturing ? 'text-black' : 'text-gray-300'}`}>
+                {selected.content.split('\n\n').map((p: string, i: number) => (
+                  <p key={i} className="first-letter:text-5xl first-letter:font-black first-letter:mr-3 first-letter:float-left first-letter:leading-none">{p}</p>
+                ))}
+              </section>
+
+              {!isCapturing && (
+                <div className="mt-20 space-y-16">
+                  <section className="space-y-10">
+                    <h3 className="text-2xl font-black italic tracking-tighter border-b border-white/5 pb-4">{t.comments}</h3>
+                    <div className="flex gap-4 items-start">
+                       <div className="w-10 h-10 bg-blue-600 rounded-full flex-shrink-0 flex items-center justify-center font-black text-xs uppercase">{user.name[0]}</div>
+                       <div className="flex-grow relative">
+                          <textarea 
+                            value={commentText}
+                            onChange={(e) => setCommentText(e.target.value)}
+                            placeholder={t.postComment}
+                            className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500 transition-all text-sm min-h-[100px] resize-none"
+                          />
+                          <button onClick={handlePostComment} className="absolute bottom-4 right-4 bg-blue-600 p-2 rounded-xl text-white">
+                            <Send size={18} />
+                          </button>
+                       </div>
+                    </div>
+
+                    <div className="space-y-8">
+                      {selected.comments.map((c: any) => (
+                        <div key={c.id} className="flex gap-4">
+                           <div className="w-10 h-10 bg-white/5 rounded-full flex-shrink-0 flex items-center justify-center font-black text-xs text-blue-500 uppercase">{c.user[0]}</div>
+                           <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[11px] font-black uppercase tracking-tight">{c.user}</span>
+                                <span className="text-[9px] text-pink-500 font-bold uppercase flex items-center gap-1">
+                                  <Instagram size={8} /> {c.ig}
+                                </span>
+                              </div>
+                              <p className="text-gray-400 text-sm leading-relaxed">"{c.text}"</p>
+                           </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                </div>
+              )}
+
+              {isCapturing && (
+                <div className="mt-32 pt-10 border-t-2 border-black flex justify-between items-center italic font-black">
+                  <span className="text-2xl tracking-tighter">INFOXITY.INTEL</span>
+                  <div className="text-right text-[8px] uppercase tracking-widest text-gray-500">© 2026 Archive</div>
+                </div>
+              )}
+            </motion.article>
+          )}
+        </AnimatePresence>
+      </main>
+
+      <footer className="pb-32 pt-10 text-center opacity-30">
+        <p className="text-[9px] font-black tracking-[1em] uppercase">Infoxity Network</p>
+      </footer>
+      
+      {isCapturing && (
+        <button onClick={() => setIsCapturing(false)} className="fixed bottom-10 right-10 bg-black text-white p-5 rounded-full z-[200] border border-white/20 shadow-2xl active:scale-90 transition-all">
+          <X size={24} />
+        </button>
+      )}
+    </div>
+  );
+}
