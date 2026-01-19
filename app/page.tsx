@@ -159,6 +159,9 @@ export default function InfoxityApp() {
   const [readers, setReaders] = useState(4520);
   const [likedIds, setLikedIds] = useState<number[]>([]);
 
+  // NUEVO ESTADO PARA CONTROLAR LAS VISTAS
+  const [activeTab, setActiveTab] = useState<'feed' | 'search' | 'library'>('feed');
+
   useEffect(() => {
     // PREVENIR ZOOM EN INPUTS
     const meta = document.createElement('meta');
@@ -166,6 +169,7 @@ export default function InfoxityApp() {
     meta.content = "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0";
     document.getElementsByTagName('head')[0].appendChild(meta);
 
+    // --- CARGA AUTOMÁTICA DEL USUARIO ---
     const savedUser = localStorage.getItem('infoxity_user');
     if (savedUser) setUser(JSON.parse(savedUser));
     
@@ -211,19 +215,21 @@ export default function InfoxityApp() {
 
       const newUser = { name: nameInput, ig: igInput.startsWith('@') ? igInput : `@${igInput}` || "@anonimo", rep: 150 };
       setUser(newUser);
+      // --- PERSISTENCIA: SE GUARDA PARA SIEMPRE ---
       localStorage.setItem('infoxity_user', JSON.stringify(newUser));
     }
   };
 
   const handleLike = (e: React.MouseEvent, id: number) => {
     e.stopPropagation();
+    let updatedLikes;
     if (likedIds.includes(id)) {
-      setLikedIds(prev => prev.filter(i => i !== id));
-      localStorage.setItem('infoxity_likes', JSON.stringify(likedIds.filter(i => i !== id)));
+      updatedLikes = likedIds.filter(i => i !== id);
     } else {
-      setLikedIds(prev => [...prev, id]);
-      localStorage.setItem('infoxity_likes', JSON.stringify([...likedIds, id]));
+      updatedLikes = [...likedIds, id];
     }
+    setLikedIds(updatedLikes);
+    localStorage.setItem('infoxity_likes', JSON.stringify(updatedLikes));
   };
 
   const shareOnWhatsApp = (e: React.MouseEvent, item: any) => {
@@ -252,7 +258,18 @@ export default function InfoxityApp() {
     setCommentText("");
   };
 
-  const savedNews = useMemo(() => news.filter(n => savedIds.includes(n.id)), [news, savedIds]);
+  // Lógica para obtener usuarios de los comentarios para el buscador
+  const commentUsers = useMemo(() => {
+    const usersMap = new Map();
+    news.forEach(n => {
+      n.comments.forEach(c => {
+        if (!usersMap.has(c.user)) {
+          usersMap.set(c.user, { name: c.user, ig: c.ig });
+        }
+      });
+    });
+    return Array.from(usersMap.values());
+  }, [news]);
 
   if (!user) {
     return (
@@ -317,7 +334,7 @@ export default function InfoxityApp() {
       
       {!isCapturing && (
         <nav className="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex justify-between items-center">
-          <span className="text-2xl font-black italic tracking-tighter text-white cursor-pointer" onClick={() => setSelected(null)}>IX</span>
+          <span className="text-2xl font-black italic tracking-tighter text-white cursor-pointer" onClick={() => {setSelected(null); setActiveTab('feed')}}>IX</span>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 bg-blue-600/10 px-3 py-1.5 rounded-full border border-blue-600/20">
               <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
@@ -332,11 +349,11 @@ export default function InfoxityApp() {
 
       {!isCapturing && !selected && (
         <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/10 backdrop-blur-2xl border border-white/10 px-8 py-4 rounded-full flex gap-12 items-center shadow-2xl">
-          <Home size={22} className="text-blue-500 cursor-pointer" onClick={() => setSelected(null)} />
-          <Search size={22} className="text-gray-400 cursor-pointer" />
-          <Bell size={22} className="text-gray-400 cursor-pointer" />
-          <div className="relative cursor-pointer" onClick={() => {}}>
-             <Library size={22} className={savedIds.length > 0 ? "text-blue-500" : "text-gray-400"} />
+          <Home size={22} className={activeTab === 'feed' ? "text-blue-500" : "text-gray-400"} onClick={() => setActiveTab('feed')} />
+          <Search size={22} className={activeTab === 'search' ? "text-blue-500" : "text-gray-400"} onClick={() => setActiveTab('search')} />
+          <Bell size={22} className="text-gray-400" />
+          <div className="relative cursor-pointer" onClick={() => setActiveTab('library')}>
+             <Library size={22} className={activeTab === 'library' ? "text-blue-500" : "text-gray-400"} />
              {savedIds.length > 0 && <span className="absolute -top-1 -right-1 bg-blue-600 text-[8px] w-4 h-4 flex items-center justify-center rounded-full font-black">{savedIds.length}</span>}
           </div>
         </nav>
@@ -344,79 +361,8 @@ export default function InfoxityApp() {
 
       <main className={`max-w-screen-md mx-auto px-4 ${isCapturing ? 'pt-0' : 'pt-24 pb-32'}`}>
         <AnimatePresence mode="wait">
-          {!selected ? (
-            <motion.div key="feed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
-              
-              <section 
-                onClick={() => setSelected(news[0])}
-                className="relative h-[400px] w-full rounded-[2.5rem] overflow-hidden group border border-white/10 cursor-pointer"
-              >
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
-                <div className="absolute inset-0 bg-blue-900/20 group-hover:bg-blue-800/30 transition-all duration-700" />
-                <div className="absolute bottom-10 left-10 right-10 z-20 space-y-4">
-                  <span className="bg-blue-600 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em]">{t.featured}</span>
-                  <h2 className="text-4xl md:text-5xl font-black leading-none tracking-tighter">{t.identityTitle}</h2>
-                  <p className="text-gray-300 text-sm font-medium line-clamp-2 italic">{t.identityBody}</p>
-                </div>
-              </section>
-
-              <div className="space-y-6">
-                {news.map((n) => (
-                  <motion.div 
-                    key={n.id} 
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setSelected(n)}
-                    className="bg-[#0f0f0f] border border-white/5 rounded-[2rem] p-6 space-y-6 hover:border-white/20 transition-all cursor-pointer group shadow-xl"
-                  >
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center font-black text-[10px]">IX</div>
-                        <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest">{lang === 'es' ? n.cat : n.catEn}</span>
-                      </div>
-                      <MoreHorizontal size={18} className="text-gray-600" />
-                    </div>
-
-                    <div className="space-y-3">
-                      <h3 className="text-3xl font-black tracking-tighter leading-tight group-hover:text-blue-500 transition-colors">
-                        {lang === 'es' ? n.title : n.titleEn}
-                      </h3>
-                      <p className="text-gray-500 text-sm font-medium italic">"{n.context}"</p>
-                    </div>
-
-                    <div className="flex justify-between items-center pt-4 border-t border-white/5">
-                      <div className="flex gap-6 items-center">
-                        <button 
-                          onClick={(e) => handleLike(e, n.id)} 
-                          className={`flex items-center gap-2 transition-colors ${likedIds.includes(n.id) ? 'text-pink-500' : 'text-gray-400 hover:text-pink-500'}`}
-                        >
-                          <Heart size={18} fill={likedIds.includes(n.id) ? "currentColor" : "none"} />
-                          <span className="text-[10px] font-bold">{likedIds.includes(n.id) ? (n.likes + 1) : n.likes}</span>
-                        </button>
-                        <div className="flex items-center gap-2 text-gray-400">
-                          <MessageCircle size={18} />
-                          <span className="text-[10px] font-bold">{n.comments.length}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-400">
-                          <Zap size={18} />
-                        </div>
-                      </div>
-                      <div className="flex gap-4">
-                        <button onClick={(e) => toggleSave(e, n.id)} className="text-gray-400 hover:text-white">
-                           {savedIds.includes(n.id) ? <BookmarkCheck size={20} className="text-blue-500" /> : <Bookmark size={20} />}
-                        </button>
-                        <button onClick={(e) => shareOnWhatsApp(e, n)} className="text-gray-400 hover:text-green-500">
-                          <Share2 size={20} />
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-            </motion.div>
-          ) : (
+          {selected ? (
             <motion.article key="article" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} className={`max-w-2xl mx-auto ${isCapturing ? 'text-black p-12' : ''}`}>
-              
               {!isCapturing && (
                 <div className="flex justify-between items-center mb-12">
                   <button onClick={() => setSelected(null)} className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-white">
@@ -427,26 +373,15 @@ export default function InfoxityApp() {
                   </button>
                 </div>
               )}
-
               <header className="space-y-6 mb-12 text-center md:text-left">
                 <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">{lang === 'es' ? selected.cat : selected.catEn}</span>
                 <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] italic">{lang === 'es' ? selected.title : selected.titleEn}</h1>
-                
-                <div className="flex items-center gap-4 pt-6 border-t border-white/5">
-                   <div className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center font-black text-xs">IX</div>
-                   <div>
-                     <p className="text-[10px] font-black uppercase">Consejo Editorial</p>
-                     <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Verificado • 2026</p>
-                   </div>
-                </div>
               </header>
-
               <section className={`text-lg md:text-xl font-serif leading-relaxed space-y-8 ${isCapturing ? 'text-black' : 'text-gray-300'}`}>
                 {selected.content.split('\n\n').map((p: string, i: number) => (
-                  <p key={i} className="first-letter:text-5xl first-letter:font-black first-letter:mr-3 first-letter:float-left first-letter:leading-none">{p}</p>
+                  <p key={i}>{p}</p>
                 ))}
               </section>
-
               {!isCapturing && (
                 <div className="mt-20 space-y-16">
                   <section className="space-y-10">
@@ -465,7 +400,6 @@ export default function InfoxityApp() {
                           </button>
                        </div>
                     </div>
-
                     <div className="space-y-8">
                       {selected.comments.map((c: any) => (
                         <div key={c.id} className="flex gap-4">
@@ -485,27 +419,107 @@ export default function InfoxityApp() {
                   </section>
                 </div>
               )}
-
-              {isCapturing && (
-                <div className="mt-32 pt-10 border-t-2 border-black flex justify-between items-center italic font-black">
-                  <span className="text-2xl tracking-tighter">INFOXITY.INTEL</span>
-                  <div className="text-right text-[8px] uppercase tracking-widest text-gray-500">© 2026 Archive</div>
-                </div>
-              )}
             </motion.article>
-          )}
+          ) : activeTab === 'feed' ? (
+            <motion.div key="feed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
+              <section onClick={() => setSelected(news[0])} className="relative h-[400px] w-full rounded-[2.5rem] overflow-hidden group border border-white/10 cursor-pointer">
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
+                <div className="absolute inset-0 bg-blue-900/20 group-hover:bg-blue-800/30 transition-all duration-700" />
+                <div className="absolute bottom-10 left-10 right-10 z-20 space-y-4">
+                  <span className="bg-blue-600 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em]">{t.featured}</span>
+                  <h2 className="text-4xl md:text-5xl font-black leading-none tracking-tighter">{t.identityTitle}</h2>
+                  <p className="text-gray-300 text-sm font-medium line-clamp-2 italic">{t.identityBody}</p>
+                </div>
+              </section>
+
+              <div className="space-y-6">
+                {news.map((n) => (
+                  <motion.div key={n.id} onClick={() => setSelected(n)} className="bg-[#0f0f0f] border border-white/5 rounded-[2rem] p-6 space-y-6 hover:border-white/20 cursor-pointer">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center font-black text-[10px]">IX</div>
+                        <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest">{lang === 'es' ? n.cat : n.catEn}</span>
+                      </div>
+                      <MoreHorizontal size={18} className="text-gray-600" />
+                    </div>
+                    <h3 className="text-3xl font-black tracking-tighter">{lang === 'es' ? n.title : n.titleEn}</h3>
+                    <div className="flex justify-between items-center pt-4 border-t border-white/5">
+                      <div className="flex gap-6 items-center">
+                        <button onClick={(e) => handleLike(e, n.id)} className={`flex items-center gap-2 ${likedIds.includes(n.id) ? 'text-pink-500' : 'text-gray-400'}`}>
+                          <Heart size={18} fill={likedIds.includes(n.id) ? "currentColor" : "none"} />
+                          <span className="text-[10px] font-bold">{n.likes + (likedIds.includes(n.id) ? 1 : 0)}</span>
+                        </button>
+                      </div>
+                      <div className="flex gap-4">
+                        <button onClick={(e) => toggleSave(e, n.id)} className="text-gray-400">
+                           {savedIds.includes(n.id) ? <BookmarkCheck size={20} className="text-blue-500" /> : <Bookmark size={20} />}
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          ) : activeTab === 'search' ? (
+            <motion.div key="search" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+               <h2 className="text-4xl font-black italic tracking-tighter">Buscador</h2>
+               <div className="bg-zinc-900/50 p-6 rounded-[2.5rem] border border-white/10">
+                  <p className="text-[10px] text-zinc-500 font-bold mb-6 uppercase italic">aun no se proporcionaran todos los usuarios dentro de poco podras ver todos los usuarios</p>
+                  <div className="space-y-4">
+                    {commentUsers.map((u, i) => (
+                      <div key={i} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-black text-xs uppercase">{u.name[0]}</div>
+                          <div>
+                            <p className="text-sm font-black">{u.name}</p>
+                            <p className="text-[10px] text-pink-500 font-bold uppercase">{u.ig}</p>
+                          </div>
+                        </div>
+                        <Users size={16} className="text-zinc-600" />
+                      </div>
+                    ))}
+                  </div>
+               </div>
+            </motion.div>
+          ) : activeTab === 'library' ? (
+            <motion.div key="lib" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
+               <h2 className="text-4xl font-black italic tracking-tighter">Mi Archivo</h2>
+               
+               <div className="space-y-8">
+                  <section>
+                    <p className="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-4">Noticias Guardadas</p>
+                    <div className="space-y-3">
+                      {news.filter(n => savedIds.includes(n.id)).map(n => (
+                        <div key={n.id} onClick={() => setSelected(n)} className="p-5 bg-zinc-900/80 rounded-2xl border border-white/5 flex justify-between items-center cursor-pointer">
+                           <span className="font-bold text-sm">{n.title}</span>
+                           <ChevronRight size={16} className="text-blue-500"/>
+                        </div>
+                      ))}
+                      {savedIds.length === 0 && <p className="text-xs text-zinc-600 italic">No hay registros guardados.</p>}
+                    </div>
+                  </section>
+
+                  <section>
+                    <p className="text-[10px] font-black text-pink-500 uppercase tracking-[0.3em] mb-4">Me Gustas</p>
+                    <div className="space-y-3">
+                      {news.filter(n => likedIds.includes(n.id)).map(n => (
+                        <div key={n.id} onClick={() => setSelected(n)} className="p-5 bg-zinc-900/80 rounded-2xl border border-white/5 flex justify-between items-center cursor-pointer">
+                           <span className="font-bold text-sm">{n.title}</span>
+                           <Heart size={16} className="text-pink-500" fill="currentColor"/>
+                        </div>
+                      ))}
+                      {likedIds.length === 0 && <p className="text-xs text-zinc-600 italic">No has dado me gusta a ninguna noticia.</p>}
+                    </div>
+                  </section>
+               </div>
+            </motion.div>
+          ) : null}
         </AnimatePresence>
       </main>
 
       <footer className="pb-32 pt-10 text-center opacity-30">
         <p className="text-[9px] font-black tracking-[1em] uppercase">Infoxity Network</p>
       </footer>
-      
-      {isCapturing && (
-        <button onClick={() => setIsCapturing(false)} className="fixed bottom-10 right-10 bg-black text-white p-5 rounded-full z-[200] border border-white/20 shadow-2xl active:scale-90 transition-all">
-          <X size={24} />
-        </button>
-      )}
     </div>
   );
 }
