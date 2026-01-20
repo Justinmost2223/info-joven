@@ -1,16 +1,24 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Shield, MessageSquare, ChevronRight, BarChart3, 
   Instagram, Languages, Award, Bookmark, 
   BookmarkCheck, CheckCircle2, ArrowLeft, Mic2, 
   TrendingUp, Scale, Star, Menu, X, Share2, Send, Zap, Globe,
-  MoreHorizontal, Heart, MessageCircle, Library, Sparkles, Home, Search, Bell, Users, Info
+  MoreHorizontal, Heart, MessageCircle, Library, Sparkles, Home, Search, Bell, Users, Info,
+  Flame, HelpCircle, Frown, ExternalLink, PlayCircle, Bot, Share, Bookmark as BookmarkIcon,
+  Check, Copy, Clock, Filter, Eye
 } from 'lucide-react';
 
-// --- TRADUCCIONES PROFESIONALES ---
+/**
+ * INFOXITY APP - V2.0 
+ * Total estimado: ~850-900 líneas
+ * Estética: Mobile-First, Moderna, Agresiva.
+ */
+
+// --- 1. DICCIONARIO DE TRADUCCIONES EXTENDIDO ---
 const TRANSLATIONS = {
   es: {
     siteName: "Infoxity",
@@ -42,7 +50,17 @@ const TRANSLATIONS = {
     socialProof: "Ya dentro del sistema:",
     loginAs: "Entrar como",
     searchUser: "Buscar usuarios...",
-    userHint: "Aún no se proporcionarán todos los usuarios, dentro de poco podrás ver todos los usuarios."
+    userHint: "Buscador de comunidad activa.",
+    storiesTitle: "En 1 Minuto",
+    iaAssistant: "Asistente de Impacto Personal",
+    iaPlaceholder: "¿Cómo me afecta esto si tengo...?",
+    sourceButton: "Ver noticia en Reuters / EFE",
+    pollQuestion: "¿Esta noticia te ayuda o es puro humo?",
+    pollOptions: ["Fuego", "Duda", "Humo"],
+    aiAnalysis: "Análisis de Impacto IA",
+    points: ["Clave 1", "Clave 2", "Clave 3"],
+    verifiedBy: "Verificado por Red de Expertos",
+    shareMessage: "¡Esto te interesa! Pásalo."
   },
   en: {
     siteName: "Infoxity",
@@ -56,8 +74,8 @@ const TRANSLATIONS = {
     comments: "Critical Debate Forum",
     postComment: "Contribute a data-driven argument...",
     capture: "Export for Archive",
-    identityTitle: "La Philosophy Infoxity",
-    identityBody: "We are not an algorithm. We are a hybrid editorial board dedicated to dismantling media noise. We offer in-depth journalism for those who demand the truth without ideological filters.",
+    identityTitle: "The Infoxity Philosophy",
+    identityBody: "We are not an algorithm. We are a hybrid editorial board dedicated to dismantling media noise. We offer in-depth journalism for those who demand truth without ideological filters.",
     back: "Back to Index",
     featured: "FEATURED ANALYSIS",
     sources: "Verified Sources",
@@ -74,566 +92,654 @@ const TRANSLATIONS = {
     socialProof: "Already inside:",
     loginAs: "Login as",
     searchUser: "Search users...",
-    userHint: "Not all users are available yet, soon you will be able to see all users."
+    userHint: "Active community search.",
+    storiesTitle: "In 1 Minute",
+    iaAssistant: "Personal Impact Assistant",
+    iaPlaceholder: "How does this affect me if...?",
+    sourceButton: "View on Reuters / EFE",
+    pollQuestion: "Helpful or just smoke?",
+    pollOptions: ["Fire", "Unsure", "Smoke"],
+    aiAnalysis: "AI Impact Analysis",
+    points: ["Key 1", "Key 2", "Key 3"],
+    verifiedBy: "Verified by Expert Network",
+    shareMessage: "Check this out!"
   }
 };
 
+// --- 2. BASE DE DATOS LOCAL AMPLIADA ---
 const INITIAL_NEWS = [
   {
-    id: 0,
-    cat: "Sistema", catEn: "System",
-    title: "Infoxity: La Red Social Noticiera del Futuro", titleEn: "Infoxity: The News Social Network of the Future",
-    context: "Bienvenido al nodo central de información libre. Haz clic para entender nuestra misión.",
-    content: "Has entrado en Infoxity. Esto no es solo un portal de noticias, es la red social noticiera diseñada para la resistencia intelectual. Actualmente nos encontramos en **Fase de Desarrollo (Beta 2026)**.\n\nNuestra misión es clara: proporcionarte un espacio donde la realidad no esté filtrada por algoritmos de complacencia. Aquí podrás informarte sobre lo que realmente importa, debatir con argumentos de peso y dejar que te guiemos a través del caos mediático actual. Muy pronto, podrás crear tu propio perfil de analista y liderar corrientes de opinión basadas en la verdad. La realidad es compleja, nosotros te ayudamos a navegarla.",
-    bias: [100, 100, 0],
-    likes: 1540,
-    poll: { q: "¿Estás listo para la nueva era?", opts: ["Totalmente", "Tengo dudas", "Prefiero observar"], votes: [1200, 150, 45] },
-    sources: ["Infoxity Core Manifest"],
-    color: "from-blue-600 to-indigo-800",
-    comments: [
-      { id: 1, user: "Admin", ig: "@infoxity", rep: 9999, text: "Bienvenidos a todos. Estamos construyendo el futuro del debate." },
-      { id: 2, user: "Lucas", ig: "@lucas_dev", rep: 500, text: "Hacía falta una web que separara el ruido de la realidad. ¡Dándole like!" }
-    ]
-  },
-  {
     id: 1,
-    cat: "Geopolítica", catEn: "Geopolitics",
-    title: "Venezuela 2026: El Nuevo Eje Energético Global", titleEn: "Venezuela 2026: The New Global Energy Axis",
-    context: "El acuerdo secreto entre Washington y Caracas para alimentar las granjas de servidores de IA en EE.UU.",
-    content: "En enero de 2026, la diplomacia energética ha dado un giro inesperado. Ante el consumo masivo de electricidad de los nuevos modelos de Inteligencia Artificial General (AGI), Estados Unidos ha firmado el 'Pacto del Caribe' con Venezuela. Este acuerdo no solo implica el levantamiento de sanciones, sino la inversión masiva en infraestructura venezolana a cambio de crudo pesado destinado exclusivamente a la generación eléctrica de centros de datos en Texas y Florida.\n\nEl análisis de Infoxity revela que este movimiento estabiliza la economía regional pero genera una nueva dependencia tecnológica. Mientras el mundo miraba hacia las renovables, la urgencia de la computación ha devuelto el poder a las reservas fósiles más grandes del mundo.",
-    bias: [95, 92, 10], 
-    likes: 2400,
-    poll: { q: "¿Es ético priorizar la IA sobre las sanciones?", opts: ["Pragmatismo necesario", "Error histórico", "Neutral"], votes: [540, 210, 95] },
-    sources: ["OPEP+ Energy Report", "Digital Geopolitics Journal", "Reuters Intelligence"],
-    color: "from-orange-500 to-red-600",
+    cat: "Economía",
+    catEn: "Economy",
+    title: "¿Cómo te afecta la nueva ley de vivienda si eres joven?",
+    titleEn: "How does the new housing law affect you?",
+    summaryIA: [
+      "Congelación de alquileres en zonas tensionadas por 3 años.",
+      "Nuevas ayudas directas de 250€ para menores de 35 años.",
+      "Aumento del IBI para viviendas que lleven vacías más de 2 años."
+    ],
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", 
+    sourceUrl: "https://www.reuters.com",
+    content: "La nueva normativa busca facilitar el acceso a la vivienda, pero expertos advierten de una posible reducción de la oferta en las grandes ciudades...",
+    bias: [95, 92, 8],
+    likes: 1240,
+    pollVotes: [500, 100, 50],
+    sharePhrases: { es: "Envía esto a quien necesite esta beca", en: "Send this to who needs this grant" },
     comments: [
-      { id: 1, user: "Mateo Fernández", ig: "@mateo_fdz", rep: 2500, text: "La energía manda, las ideologías solo adornan. El regreso del crudo pesado era inevitable con el consumo de la AGI. 🔋" },
-      { id: 101, user: "Elena Vega", ig: "@elvega_geo", rep: 4890, text: "Lo que nadie dice es que este acuerdo deja a la UE fuera del tablero energético sudamericano por otra década." },
-      { id: 102, user: "Dr. Arreaza", ig: "@arreaza_intel", rep: 1200, text: "Como analista en Caracas, confirmo que la infraestructura ya está recibiendo técnicos de Texas. Movimiento maestro." },
-      { id: 103, user: "Sofia K.", ig: "@sk_global", rep: 950, text: "Es una hipocresía climática total, pero el mercado no espera a las renovables." },
-      { id: 104, user: "Juan P.", ig: "@juanp_energy", rep: 300, text: "¿Y qué pasará con el precio del barril doméstico?" }
+      { id: 1, user: "Marco", ig: "@marco_dev", rep: 450, text: "Era necesario, pero los precios no bajarán solo con leyes." }
     ]
   },
   {
     id: 2,
-    cat: "Cultura", catEn: "Culture",
-    title: "Stranger Things 5 y el Fin del Binge-Watching", titleEn: "Stranger Things 5 and the End of Binge-Watching",
-    context: "Netflix abandona el modelo de 'todo de golpe' para salvar su relevancia cultural.",
-    content: "El estreno de la última temporada de Stranger Things en 2026 marca oficialmente el funeral del maratón de series. Netflix ha anunciado que los episodios se lanzarán quincenalmente, acompañados de eventos en vivo en Realidad Virtual.\n\nEl análisis de Infoxity indica que el modelo de 'atracón' destruía la conversación social en menos de 48 horas. Ahora, la industria busca la 'escasez artificial'.",
-    bias: [88, 94, 25],
-    likes: 1800,
-    poll: { q: "¿Prefieres esperar o verlo todo ya?", opts: ["Esperar (Crea hype)", "Todo ya", "Indiferente"], votes: [890, 410, 120] },
-    sources: ["Streaming Analytics 2026", "Variety Insights"],
-    color: "from-purple-500 to-indigo-600",
-    comments: [
-      { id: 201, user: "Carlos Ruiz", ig: "@cruiz_filmes", rep: 3560, text: "Por fin recuperamos la cultura de la espera. El binge-watching era comida rápida emocional. 🙌" },
-      { id: 202, user: "Marta G.", ig: "@martag_tv", rep: 1200, text: "Esto salvará las suscripciones. Netflix aprendió de HBO por las malas." },
-      { id: 203, user: "Rick", ig: "@rick_grimes", rep: 150, text: "A este paso la terminaremos de ver en 2027..." },
-      { id: 204, user: "Sara", ig: "@sara_cine", rep: 800, text: "La VR va a ser un cambio total para la experiencia." }
-    ]
+    cat: "Tecnología",
+    catEn: "Tech",
+    title: "IA en el trabajo: ¿Tu puesto corre peligro este 2026?",
+    titleEn: "AI at work: Is your job at risk this 2026?",
+    summaryIA: [
+      "Automatización masiva en sectores administrativos y creativos.",
+      "Aumento del 40% en productividad para quienes usen copilotos.",
+      "Nuevos roles emergentes: Auditor de Sesgo de IA."
+    ],
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    sourceUrl: "https://www.efe.com",
+    content: "El despliegue de agentes autónomos está redefiniendo lo que significa 'trabajar'. No es que la IA te reemplace, es que alguien que la usa lo hará...",
+    bias: [88, 95, 12],
+    likes: 3100,
+    pollVotes: [800, 200, 100],
+    sharePhrases: { es: "Pásalo al que todavía no usa esta tecnología", en: "Pass this to those not using tech yet" },
+    comments: []
   },
   {
     id: 3,
-    cat: "Política", catEn: "Politics",
-    title: "Gen Z: El Fin de la Izquierda y la Derecha", titleEn: "Gen Z: The End of Left and Right",
-    context: "El 70% de los jóvenes votantes en 2026 se declaran 'Pragmáticos Radicales'.",
-    content: "Las etiquetas políticas tradicionales han colapsado. Un estudio profundo realizado por el equipo de Infoxity muestra que la Generación Z ya no vota por bloques ideológicos, sino por 'paquetes de soluciones'. Un joven puede defender el mercado libre de criptoactivos y al mismo tiempo exigir la nacionalización de la vivienda.",
-    bias: [98, 96, 5],
-    likes: 5200,
-    poll: { q: "¿Te sientes representado por algún partido?", opts: ["Ninguno", "Por ideas sueltas", "Sí, soy fiel"], votes: [1500, 600, 150] },
-    sources: ["Pew Research Center 2026", "Infoxity Data Lab"],
-    color: "from-emerald-500 to-teal-600",
-    comments: [
-      { id: 301, user: "Lucía Méndez", ig: "@lucia_vota", rep: 5100, text: "La eficiencia no tiene color político. Queremos que las cosas funcionen, punto." },
-      { id: 302, user: "Marcos J.", ig: "@marcos_j", rep: 800, text: "El post-ideologismo es la única salida a la polarización estéril de los últimos 20 años." },
-      { id: 303, user: "Dani", ig: "@dani_pragmatic", rep: 400, text: "Pragmatismo o muerte. Los viejos partidos no entienden nada." }
-    ]
+    cat: "Geopolítica",
+    catEn: "Geopolitics",
+    title: "El litio en Chile: ¿Por qué subirá el precio de tu móvil?",
+    titleEn: "Lithium in Chile: Why your phone price will rise?",
+    summaryIA: [
+      "Nacionalización parcial de las minas en el triángulo del litio.",
+      "China y EE.UU. compiten por el control de las baterías.",
+      "Impacto directo en el coste de fabricación de smartphones."
+    ],
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    sourceUrl: "https://www.reuters.com",
+    content: "La guerra por los recursos del futuro se libra en Sudamérica. El litio es el nuevo petróleo y su escasez afectará tu bolsillo...",
+    bias: [92, 90, 15],
+    likes: 950,
+    pollVotes: [300, 400, 10],
+    sharePhrases: { es: "Envía esto al que quiere renovar móvil", en: "Send this to your tech-hungry friend" },
+    comments: []
   }
 ];
 
+const MOCK_USERS = [
+  { name: "Satoshi", ig: "@crypto_king", rep: 890 },
+  { name: "Elena", ig: "@elena_vision", rep: 1200 },
+  { name: "Alex", ig: "@alex_news", rep: 340 }
+];
+
+// --- 3. COMPONENTE PRINCIPAL ---
 export default function InfoxityApp() {
+  // Estados de Usuario y App
   const [user, setUser] = useState<{name: string, ig: string, rep: number} | null>(null);
-  const [persistentUser, setPersistentUser] = useState<{name: string, ig: string, rep: number} | null>(null);
-  const [nameInput, setNameInput] = useState("");
-  const [igInput, setIgInput] = useState("");
   const [lang, setLang] = useState<'es' | 'en'>('es');
-  const [news, setNews] = useState(INITIAL_NEWS);
   const [selected, setSelected] = useState<any>(null);
-  const [savedIds, setSavedIds] = useState<number[]>([]);
-  const [votedPolls, setVotedPolls] = useState<number[]>([]);
-  const [isCapturing, setIsCapturing] = useState(false);
-  const [commentText, setCommentText] = useState("");
-  const [readers, setReaders] = useState(4520);
-  const [likedIds, setLikedIds] = useState<number[]>([]);
+  const [view, setView] = useState<'feed' | 'library' | 'search'>('feed');
   
-  // NUEVOS ESTADOS SOLICITADOS
-  const [viewLibrary, setViewLibrary] = useState(false);
-  const [viewSearch, setViewSearch] = useState(false);
+  // Estados de Interacción
+  const [likedIds, setLikedIds] = useState<number[]>([]);
+  const [savedIds, setSavedIds] = useState<number[]>([]);
+  const [pollVotedIds, setPollVotedIds] = useState<number[]>([]);
+  
+  // Estados de UI
   const [searchQuery, setSearchQuery] = useState("");
-
-  useEffect(() => {
-    // PREVENIR ZOOM EN INPUTS
-    const meta = document.createElement('meta');
-    meta.name = "viewport";
-    meta.content = "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0";
-    document.getElementsByTagName('head')[0].appendChild(meta);
-
-    const savedUser = localStorage.getItem('infoxity_user');
-    if (savedUser) setPersistentUser(JSON.parse(savedUser));
-    
-    const savedVotes = localStorage.getItem('infoxity_votes');
-    if (savedVotes) setVotedPolls(JSON.parse(savedVotes));
-    
-    const savedLibrary = localStorage.getItem('infoxity_library');
-    if (savedLibrary) setSavedIds(JSON.parse(savedLibrary));
-
-    const savedLikes = localStorage.getItem('infoxity_likes');
-    if (savedLikes) setLikedIds(JSON.parse(savedLikes));
-
-    const savedComments = localStorage.getItem('infoxity_global_comments');
-    if (savedComments) {
-      const parsedComments = JSON.parse(savedComments);
-      setNews(prev => prev.map(n => ({
-        ...n,
-        comments: [...(parsedComments[n.id] || []), ...INITIAL_NEWS.find(inews => inews.id === n.id)!.comments]
-      })));
-    }
-
-    const interval = setInterval(() => setReaders(p => p + (Math.floor(Math.random()*21)-10)), 3000);
-    return () => clearInterval(interval);
-  }, []);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [readers, setReaders] = useState(4829);
+  const [showNotification, setShowNotification] = useState(false);
+  const [iaQuestion, setIaQuestion] = useState("");
+  const [iaAnswer, setIaAnswer] = useState("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
 
   const t = TRANSLATIONS[lang];
 
-  const handleLogin = async () => {
-    if (nameInput) {
-      try {
-        await fetch("https://formspree.io/f/mqeeawor", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            nombre_usuario: nameInput, 
-            instagram: igInput || "No proporcionado",
-            fecha_registro: new Date().toLocaleString()
-          }),
-        });
-      } catch (err) {
-        console.error("Error al guardar en base de datos");
-      }
+  // --- 4. EFECTOS Y PERSISTENCIA ---
+  useEffect(() => {
+    const savedUser = localStorage.getItem('infoxity_user_v2');
+    if (savedUser) setUser(JSON.parse(savedUser));
+    
+    const savedLikes = localStorage.getItem('infoxity_likes');
+    if (savedLikes) setLikedIds(JSON.parse(savedLikes));
 
-      const newUser = { name: nameInput, ig: igInput.startsWith('@') ? igInput : `@${igInput}` || "@anonimo", rep: 150 };
-      setUser(newUser);
-      localStorage.setItem('infoxity_user', JSON.stringify(newUser));
-    }
+    const interval = setInterval(() => {
+      setReaders(p => p + (Math.floor(Math.random() * 7) - 3));
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (likedIds.length > 0) localStorage.setItem('infoxity_likes', JSON.stringify(likedIds));
+  }, [likedIds]);
+
+  // --- 5. FUNCIONES DE LÓGICA ---
+  const handleLogin = (name: string, ig: string) => {
+    if (!name.trim()) return;
+    const newUser = { name, ig: ig || "@anon", rep: 120 };
+    setUser(newUser);
+    localStorage.setItem('infoxity_user_v2', JSON.stringify(newUser));
   };
 
-  const handlePersistentLogin = () => {
-    if (persistentUser) setUser(persistentUser);
+  const toggleLike = (id: number) => {
+    setLikedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
 
-  const handleLike = (e: React.MouseEvent, id: number) => {
-    e.stopPropagation();
-    let newLikes;
-    if (likedIds.includes(id)) {
-      newLikes = likedIds.filter(i => i !== id);
-    } else {
-      newLikes = [...likedIds, id];
-    }
-    setLikedIds(newLikes);
-    localStorage.setItem('infoxity_likes', JSON.stringify(newLikes));
+  const toggleSave = (id: number) => {
+    setSavedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
 
-  const shareOnWhatsApp = (e: React.MouseEvent, item: any) => {
-    e.stopPropagation();
-    const text = `📊 *INFOXITY INTEL*:\n"${item.title}"\n\nAnalítica completa aquí: ${window.location.href}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  const handlePollVote = (newsId: number, optionIndex: number) => {
+    if (pollVotedIds.includes(newsId)) return;
+    setPollVotedIds([...pollVotedIds, newsId]);
+    setShowNotification(true);
+    setTimeout(() => setShowNotification(false), 3000);
   };
 
-  const toggleSave = (e: React.MouseEvent, id: number) => {
-    e.stopPropagation();
-    const newSaved = savedIds.includes(id) ? savedIds.filter(i => i !== id) : [...savedIds, id];
-    setSavedIds(newSaved);
-    localStorage.setItem('infoxity_library', JSON.stringify(newSaved));
+  const askAi = () => {
+    if (!iaQuestion.trim()) return;
+    setIsAiLoading(true);
+    setTimeout(() => {
+      setIaAnswer(`Basado en el análisis de ${selected.sourceUrl.includes('reuters') ? 'Reuters' : 'EFE'}, esto te impactará principalmente en la movilidad y el ahorro mensual. Se estima un ajuste del 12% en tu zona.`);
+      setIsAiLoading(false);
+    }, 1500);
   };
 
-  const handlePostComment = () => {
-    if(!commentText.trim() || !user) return;
-    const newComment = { id: Date.now(), user: user.name, ig: user.ig, rep: user.rep, text: commentText };
-    const updatedNews = news.map(n => n.id === selected.id ? { ...n, comments: [newComment, ...n.comments] } : n);
-    setNews(updatedNews);
-    setSelected({...selected, comments: [newComment, ...selected.comments]});
-    const currentGlobal = JSON.parse(localStorage.getItem('infoxity_global_comments') || '{}');
-    const newsComments = currentGlobal[selected.id] || [];
-    currentGlobal[selected.id] = [newComment, ...newsComments];
-    localStorage.setItem('infoxity_global_comments', JSON.stringify(currentGlobal));
-    setCommentText("");
-  };
+  // --- 6. RENDERIZADO DE VISTAS ---
 
-  const savedNewsList = useMemo(() => news.filter(n => savedIds.includes(n.id)), [news, savedIds]);
-  const likedNewsList = useMemo(() => news.filter(n => likedIds.includes(n.id)), [news, likedIds]);
-
-  // Buscador de usuarios basado en comentarios
-  const allUsers = useMemo(() => {
-    const usersMap = new Map();
-    news.forEach(n => {
-      n.comments.forEach(c => {
-        usersMap.set(c.user, { name: c.user, ig: c.ig });
-      });
-    });
-    return Array.from(usersMap.values()).filter(u => 
-      u.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [news, searchQuery]);
-
-  if (!user) {
-    return (
-      <main className="fixed inset-0 bg-black z-[100] flex items-center justify-center p-6 overflow-y-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-sm w-full space-y-8 py-10">
-          
-          <div className="flex flex-col items-center space-y-3">
-            <div className="flex -space-x-3">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="w-10 h-10 rounded-full border-2 border-black bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] font-bold">
-                  {String.fromCharCode(64 + i)}
-                </div>
-              ))}
-              <div className="w-10 h-10 rounded-full border-2 border-black bg-zinc-800 flex items-center justify-center text-[10px] font-black text-blue-500">
-                +1k
-              </div>
-            </div>
-            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{t.socialProof}</p>
-          </div>
-
-          <div className="text-center space-y-2">
-            <h1 className="text-8xl font-black italic tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">IX</h1>
-            <p className="text-blue-500 text-[10px] font-black tracking-[0.4em] uppercase">{t.welcome}</p>
-          </div>
-
-          <div className="bg-zinc-900/50 backdrop-blur-3xl border border-white/10 p-8 rounded-[2.5rem] space-y-4 shadow-2xl">
-            {persistentUser ? (
-              <button 
-                onClick={handlePersistentLogin}
-                className="w-full bg-white/10 border border-white/20 p-6 rounded-2xl flex items-center gap-4 hover:bg-white/20 transition-all group mb-4"
-              >
-                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-black">{persistentUser.name[0]}</div>
-                <div className="text-left">
-                  <p className="text-[10px] text-gray-400 font-bold uppercase">{t.loginAs}</p>
-                  <p className="text-sm font-black text-white">{persistentUser.name}</p>
-                </div>
-                <ChevronRight size={18} className="ml-auto text-gray-500 group-hover:text-white transition-all" />
-              </button>
-            ) : null}
-
-            {!persistentUser && (
-              <>
-                <div className="relative group">
-                   <input 
-                      type="text" 
-                      placeholder={t.placeholderName} 
-                      className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-white outline-none focus:border-blue-500 transition-all text-sm font-medium" 
-                      onChange={(e) => setNameInput(e.target.value)} 
-                   />
-                </div>
-                <div className="relative">
-                  <Instagram className="absolute left-5 top-1/2 -translate-y-1/2 text-pink-500 w-5 h-5" />
-                  <input 
-                    type="text" 
-                    placeholder={t.placeholderIg} 
-                    className="w-full bg-white/5 border border-white/10 p-5 pl-14 rounded-2xl text-white outline-none focus:border-pink-500 transition-all text-sm font-medium" 
-                    onChange={(e) => setIgInput(e.target.value)} 
-                  />
-                </div>
-                <button onClick={handleLogin} className="w-full bg-blue-600 text-white p-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-blue-700 transition-all shadow-[0_10px_30px_rgba(37,99,235,0.3)] flex items-center justify-center gap-2 group">
-                  {t.actionButton}
-                  <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                </button>
-              </>
-            )}
-            
-            <p className="text-[9px] text-zinc-500 text-center font-bold uppercase tracking-tighter px-4">
-              Al entrar, te unes al nodo de inteligencia colectiva Infoxity.
-            </p>
-          </div>
-        </motion.div>
-      </main>
-    );
-  }
+  if (!user) return <LoginView t={t} onLogin={handleLogin} />;
 
   return (
-    <div className={`min-h-screen selection:bg-blue-600 selection:text-white ${isCapturing ? 'bg-white' : 'bg-[#000] text-white'}`}>
+    <div className={`min-h-screen ${isCapturing ? 'bg-white text-black' : 'bg-black text-white'} font-sans transition-colors duration-500`}>
       
-      {!isCapturing && (
-        <nav className="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex justify-between items-center">
-          <span className="text-2xl font-black italic tracking-tighter text-white cursor-pointer" onClick={() => {setSelected(null); setViewLibrary(false); setViewSearch(false);}}>IX</span>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 bg-blue-600/10 px-3 py-1.5 rounded-full border border-blue-600/20">
-              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-tighter text-blue-400">{readers}</span>
-            </div>
-            <button onClick={() => setLang(lang === 'es' ? 'en' : 'es')} className="text-[10px] font-black bg-white/5 w-8 h-8 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-all">
-              {lang.toUpperCase()}
-            </button>
+      {/* HEADER SUPERIOR */}
+      <nav className="fixed top-0 w-full z-[100] bg-black/80 backdrop-blur-xl border-b border-white/5 p-4 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black italic text-xl shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+            IX
           </div>
-        </nav>
-      )}
-
-      {/* MODAL DE BÚSQUEDA DE USUARIOS */}
-      <AnimatePresence>
-        {viewSearch && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/95 z-[60] pt-24 px-6 overflow-y-auto">
-            <div className="max-w-md mx-auto space-y-8">
-              <div className="flex justify-between items-center">
-                <h2 className="text-3xl font-black italic tracking-tighter">{t.searchUser}</h2>
-                <X className="cursor-pointer" onClick={() => setViewSearch(false)} />
-              </div>
-              <input 
-                autoFocus
-                type="text" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Nombre de usuario..."
-                className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-white outline-none focus:border-blue-500 transition-all"
-              />
-              <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest bg-blue-500/10 p-4 rounded-xl border border-blue-500/20">
-                {t.userHint}
-              </p>
-              <div className="space-y-4">
-                {allUsers.map((u, i) => (
-                  <div key={i} className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-black text-xs">{u.name[0]}</div>
-                    <div>
-                      <p className="text-sm font-black">{u.name}</p>
-                      <p className="text-[10px] text-pink-500 font-bold">{u.ig}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* MODAL DE GUARDADOS / ME GUSTA */}
-      <AnimatePresence>
-        {viewLibrary && (
-          <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} className="fixed inset-0 bg-black z-[60] pt-24 px-6 overflow-y-auto">
-            <div className="max-w-md mx-auto space-y-12">
-              <div className="flex justify-between items-center">
-                <h2 className="text-4xl font-black italic tracking-tighter">{t.myLibrary}</h2>
-                <X className="cursor-pointer" onClick={() => setViewLibrary(false)} />
-              </div>
-
-              <div className="space-y-12">
-                <div className="space-y-6">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 flex items-center gap-2">
-                    <Bookmark size={14} /> Guardados ({savedNewsList.length})
-                  </h3>
-                  <div className="grid gap-4">
-                    {savedNewsList.length === 0 && <p className="text-xs text-zinc-600 uppercase font-bold italic">{t.noSaved}</p>}
-                    {savedNewsList.map(n => (
-                      <div key={n.id} onClick={() => {setSelected(n); setViewLibrary(false);}} className="bg-white/5 border border-white/10 p-5 rounded-2xl cursor-pointer hover:border-blue-500 transition-all">
-                        <p className="text-[8px] font-black uppercase text-gray-500 mb-1">{n.cat}</p>
-                        <p className="text-sm font-black leading-tight">{n.title}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-pink-500 flex items-center gap-2">
-                    <Heart size={14} /> Me Gusta ({likedNewsList.length})
-                  </h3>
-                  <div className="grid gap-4">
-                    {likedNewsList.map(n => (
-                      <div key={n.id} onClick={() => {setSelected(n); setViewLibrary(false);}} className="bg-white/5 border border-white/10 p-5 rounded-2xl cursor-pointer hover:border-pink-500 transition-all">
-                        <p className="text-[8px] font-black uppercase text-gray-500 mb-1">{n.cat}</p>
-                        <p className="text-sm font-black leading-tight">{n.title}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {!isCapturing && !selected && (
-        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/10 backdrop-blur-2xl border border-white/10 px-8 py-4 rounded-full flex gap-12 items-center shadow-2xl">
-          <Home size={22} className="text-blue-500 cursor-pointer" onClick={() => {setSelected(null); setViewLibrary(false); setViewSearch(false);}} />
-          <Search size={22} className={`cursor-pointer transition-all ${viewSearch ? 'text-blue-500' : 'text-gray-400'}`} onClick={() => {setViewSearch(true); setViewLibrary(false);}} />
-          <Bell size={22} className="text-gray-400 cursor-pointer" />
-          <div className="relative cursor-pointer" onClick={() => {setViewLibrary(true); setViewSearch(false);}}>
-             <Library size={22} className={savedIds.length > 0 || likedIds.length > 0 ? "text-blue-500" : "text-gray-400"} />
-             {(savedIds.length + likedIds.length) > 0 && <span className="absolute -top-1 -right-1 bg-blue-600 text-[8px] w-4 h-4 flex items-center justify-center rounded-full font-black">{savedIds.length + likedIds.length}</span>}
+          <div>
+            <h1 className="text-sm font-black uppercase tracking-tighter leading-none">{t.siteName}</h1>
+            <p className="text-[8px] font-bold text-blue-500 tracking-[0.2em] uppercase">{t.tagline}</p>
           </div>
-        </nav>
-      )}
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex bg-white/5 px-4 py-2 rounded-full items-center gap-2 border border-white/10">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <span className="text-[10px] font-black tracking-widest uppercase">{readers} {t.reading}</span>
+          </div>
+          <button 
+            onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
+            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black hover:bg-blue-600 transition-all"
+          >
+            {lang.toUpperCase()}
+          </button>
+        </div>
+      </nav>
 
-      <main className={`max-w-screen-md mx-auto px-4 ${isCapturing ? 'pt-0' : 'pt-24 pb-32'}`}>
+      {/* CONTENIDO PRINCIPAL */}
+      <main className="pt-24 pb-32 px-4 max-w-xl mx-auto">
+        
         <AnimatePresence mode="wait">
           {!selected ? (
-            <motion.div key="feed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
-              
-              <section 
-                onClick={() => setSelected(news[0])}
-                className="relative h-[400px] w-full rounded-[2.5rem] overflow-hidden group border border-white/10 cursor-pointer"
-              >
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
-                <div className="absolute inset-0 bg-blue-900/20 group-hover:bg-blue-800/30 transition-all duration-700" />
-                <div className="absolute bottom-10 left-10 right-10 z-20 space-y-4">
-                  <span className="bg-blue-600 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em]">{t.featured}</span>
-                  <h2 className="text-4xl md:text-5xl font-black leading-none tracking-tighter">{t.identityTitle}</h2>
-                  <p className="text-gray-300 text-sm font-medium line-clamp-2 italic">{t.identityBody}</p>
+            <motion.div 
+              key="feed"
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
+              className="space-y-10"
+            >
+              {/* SECCIÓN STORIES "EN 1 MINUTO" */}
+              <section>
+                <div className="flex justify-between items-end mb-4 px-2">
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500">{t.storiesTitle}</h3>
+                  <div className="h-[1px] flex-grow mx-4 bg-zinc-800" />
+                </div>
+                <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+                  {INITIAL_NEWS.map((n, idx) => (
+                    <motion.div 
+                      key={`story-${n.id}`}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setSelected(n)}
+                      className="flex-shrink-0 w-36 h-56 rounded-[2rem] relative overflow-hidden border border-white/10 group cursor-pointer"
+                    >
+                      <div className={`absolute inset-0 bg-gradient-to-t ${idx === 0 ? 'from-blue-600' : idx === 1 ? 'from-purple-600' : 'from-zinc-800'} to-transparent opacity-80`} />
+                      <div className="absolute inset-0 p-4 flex flex-col justify-end">
+                        <span className="text-[8px] font-black uppercase bg-white/20 w-fit px-2 py-1 rounded mb-2 backdrop-blur-md">
+                          {lang === 'es' ? n.cat : n.catEn}
+                        </span>
+                        <p className="text-[11px] font-bold leading-tight">{n.title}</p>
+                      </div>
+                      <div className="absolute top-3 left-3 flex gap-1">
+                        <div className="w-full h-1 bg-white/30 rounded-full overflow-hidden">
+                          <motion.div 
+                            initial={{ width: 0 }} 
+                            animate={{ width: '100%' }} 
+                            transition={{ duration: 5, repeat: Infinity }}
+                            className="h-full bg-white" 
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </section>
 
-              <div className="space-y-6">
-                {news.map((n) => (
-                  <motion.div 
-                    key={n.id} 
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setSelected(n)}
-                    className="bg-[#0f0f0f] border border-white/5 rounded-[2rem] p-6 space-y-6 hover:border-white/20 transition-all cursor-pointer group shadow-xl"
-                  >
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center font-black text-[10px]">IX</div>
-                        <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest">{lang === 'es' ? n.cat : n.catEn}</span>
-                      </div>
-                      <MoreHorizontal size={18} className="text-gray-600" />
-                    </div>
-
-                    <div className="space-y-3">
-                      <h3 className="text-3xl font-black tracking-tighter leading-tight group-hover:text-blue-500 transition-colors">
-                        {lang === 'es' ? n.title : n.titleEn}
-                      </h3>
-                      <p className="text-gray-500 text-sm font-medium italic">"{n.context}"</p>
-                    </div>
-
-                    <div className="flex justify-between items-center pt-4 border-t border-white/5">
-                      <div className="flex gap-6 items-center">
-                        <button 
-                          onClick={(e) => handleLike(e, n.id)} 
-                          className={`flex items-center gap-2 transition-colors ${likedIds.includes(n.id) ? 'text-pink-500' : 'text-gray-400 hover:text-pink-500'}`}
-                        >
-                          <Heart size={18} fill={likedIds.includes(n.id) ? "currentColor" : "none"} />
-                          <span className="text-[10px] font-bold">{likedIds.includes(n.id) ? (n.likes + 1) : n.likes}</span>
-                        </button>
-                        <div className="flex items-center gap-2 text-gray-400">
-                          <MessageCircle size={18} />
-                          <span className="text-[10px] font-bold">{n.comments.length}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-400">
-                          <Zap size={18} />
-                        </div>
-                      </div>
-                      <div className="flex gap-4">
-                        <button onClick={(e) => toggleSave(e, n.id)} className="text-gray-400 hover:text-white">
-                           {savedIds.includes(n.id) ? <BookmarkCheck size={20} className="text-blue-500" /> : <Bookmark size={20} />}
-                        </button>
-                        <button onClick={(e) => shareOnWhatsApp(e, n)} className="text-gray-400 hover:text-green-500">
-                          <Share2 size={20} />
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
+              {/* FEED DE NOTICIAS */}
+              <div className="space-y-8">
+                {INITIAL_NEWS.map((news) => (
+                  <NewsCard 
+                    key={news.id} 
+                    news={news} 
+                    t={t} 
+                    lang={lang}
+                    isLiked={likedIds.includes(news.id)}
+                    onLike={() => toggleLike(news.id)}
+                    onClick={() => setSelected(news)}
+                  />
                 ))}
               </div>
-
             </motion.div>
           ) : (
-            <motion.article key="article" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} className={`max-w-2xl mx-auto ${isCapturing ? 'text-black p-12' : ''}`}>
-              
-              {!isCapturing && (
-                <div className="flex justify-between items-center mb-12">
-                  <button onClick={() => setSelected(null)} className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-white">
-                    <ArrowLeft size={20} />
-                  </button>
-                  <button onClick={() => setIsCapturing(true)} className="bg-white text-black px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">
-                    {t.capture}
-                  </button>
-                </div>
-              )}
+            /* VISTA DETALLE DE NOTICIA (LAYOUT PEDIDO) */
+            <motion.div 
+              key="detail"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              className="space-y-8"
+            >
+              <button 
+                onClick={() => setSelected(null)}
+                className="flex items-center gap-2 text-zinc-500 font-black text-[10px] uppercase tracking-widest hover:text-white transition-colors"
+              >
+                <ArrowLeft size={14} /> {t.back}
+              </button>
 
-              <header className="space-y-6 mb-12 text-center md:text-left">
-                <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">{lang === 'es' ? selected.cat : selected.catEn}</span>
-                <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] italic">{lang === 'es' ? selected.title : selected.titleEn}</h1>
+              {/* Titular Gancho */}
+              <h2 className="text-4xl sm:text-5xl font-black italic tracking-tighter leading-[0.9] text-white">
+                {lang === 'es' ? selected.title : selected.titleEn}
+              </h2>
+
+              {/* Resumen IA (3 Puntos Clave) */}
+              <div className="bg-zinc-900/80 border border-white/10 rounded-[2.5rem] p-8 space-y-6 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-10">
+                  <Sparkles size={80} />
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-600 p-2 rounded-lg"><Zap size={16} fill="white" /></div>
+                  <h4 className="font-black uppercase tracking-tighter text-sm">Resumen IA (3 Claves)</h4>
+                </div>
+                <div className="space-y-4 relative z-10">
+                  {selected.summaryIA.map((point: string, i: number) => (
+                    <div key={i} className="flex gap-4 items-start">
+                      <span className="text-blue-500 font-black text-lg">0{i+1}</span>
+                      <p className="text-zinc-200 text-sm font-medium leading-relaxed max-w-[90%]">
+                        {point}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contenido Visual (TikTok/YouTube Embed) */}
+              <div className="aspect-[9/16] sm:aspect-video w-full rounded-[3rem] bg-zinc-900 border-4 border-white/5 overflow-hidden shadow-2xl relative">
+                <iframe 
+                  className="w-full h-full"
+                  src={selected.videoUrl}
+                  title="Video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+                <div className="absolute top-6 left-6 bg-red-600 text-[10px] font-black px-3 py-1 rounded-full flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-white rounded-full animate-ping" />
+                  OFICIAL
+                </div>
+              </div>
+
+              {/* Fuente y Transparencia */}
+              <div className="flex flex-col gap-4">
+                <a 
+                  href={selected.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-center gap-4 w-full bg-white text-black p-6 rounded-[2rem] font-black uppercase text-xs tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all"
+                >
+                  <ExternalLink size={20} /> {t.sourceButton}
+                </a>
+                <p className="text-[10px] text-center text-zinc-500 font-bold uppercase italic">
+                  Información contrastada bajo protocolo de transparencia IX-256
+                </p>
+              </div>
+
+              {/* Termómetro de Opinión (Gamificación) */}
+              <section className="bg-zinc-900/50 rounded-[3rem] p-8 border border-white/5 space-y-8">
+                <div className="text-center space-y-2">
+                  <h4 className="text-xl font-black italic tracking-tighter">{t.pollQuestion}</h4>
+                  <p className="text-xs text-zinc-500 font-bold uppercase">Tu voto ayuda a filtrar el ruido</p>
+                </div>
                 
-                <div className="flex items-center gap-4 pt-6 border-t border-white/5">
-                   <div className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center font-black text-xs">IX</div>
-                   <div>
-                     <p className="text-[10px] font-black uppercase">Consejo Editorial</p>
-                     <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Verificado • 2026</p>
-                   </div>
+                <div className="grid grid-cols-3 gap-4">
+                  {[
+                    { icon: <Flame />, color: "text-orange-500", bg: "bg-orange-500/10", label: t.pollOptions[0] },
+                    { icon: <HelpCircle />, color: "text-blue-500", bg: "bg-blue-500/10", label: t.pollOptions[1] },
+                    { icon: <Frown />, color: "text-red-500", bg: "bg-red-500/10", label: t.pollOptions[2] }
+                  ].map((opt, i) => (
+                    <button 
+                      key={i}
+                      onClick={() => handlePollVote(selected.id, i)}
+                      disabled={pollVotedIds.includes(selected.id)}
+                      className={`flex flex-col items-center gap-3 p-6 rounded-3xl border transition-all ${
+                        pollVotedIds.includes(selected.id) ? 'opacity-50 grayscale' : 'border-white/5 hover:border-white/20 hover:bg-white/5'
+                      }`}
+                    >
+                      <div className={`${opt.bg} ${opt.color} p-4 rounded-full`}>
+                        {React.cloneElement(opt.icon as React.ReactElement, { size: 28, fill: "currentColor" })}
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-widest">{opt.label}</span>
+                    </button>
+                  ))}
                 </div>
-              </header>
-
-              <section className={`text-lg md:text-xl font-serif leading-relaxed space-y-8 ${isCapturing ? 'text-black' : 'text-gray-300'}`}>
-                {selected.content.split('\n\n').map((p: string, i: number) => (
-                  <p key={i} className="first-letter:text-5xl first-letter:font-black first-letter:mr-3 first-letter:float-left first-letter:leading-none">{p}</p>
-                ))}
               </section>
 
-              {!isCapturing && (
-                <div className="mt-20 space-y-16">
-                  <section className="space-y-10">
-                    <h3 className="text-2xl font-black italic tracking-tighter border-b border-white/5 pb-4">{t.comments}</h3>
-                    <div className="flex gap-4 items-start">
-                       <div className="w-10 h-10 bg-blue-600 rounded-full flex-shrink-0 flex items-center justify-center font-black text-xs uppercase">{user.name[0]}</div>
-                       <div className="flex-grow relative">
-                          <textarea 
-                            value={commentText}
-                            onChange={(e) => setCommentText(e.target.value)}
-                            placeholder={t.postComment}
-                            className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl outline-none focus:border-blue-500 transition-all text-sm min-h-[100px] resize-none"
-                          />
-                          <button onClick={handlePostComment} className="absolute bottom-4 right-4 bg-blue-600 p-2 rounded-xl text-white">
-                            <Send size={18} />
-                          </button>
-                       </div>
+              {/* Asistente de IA Personalizado */}
+              <section className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-[3rem] p-8 shadow-2xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:rotate-12 transition-transform">
+                  <Bot size={120} />
+                </div>
+                <div className="relative z-10 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-blue-600 shadow-xl">
+                      <Sparkles />
                     </div>
+                    <div>
+                      <h4 className="text-xl font-black italic leading-none">{t.iaAssistant}</h4>
+                      <p className="text-[10px] font-bold text-blue-200 uppercase tracking-widest">Respuesta instantánea</p>
+                    </div>
+                  </div>
 
-                    <div className="space-y-8">
-                      {selected.comments.map((c: any) => (
-                        <div key={c.id} className="flex gap-4">
-                           <div className="w-10 h-10 bg-white/5 rounded-full flex-shrink-0 flex items-center justify-center font-black text-xs text-blue-500 uppercase">{c.user[0]}</div>
-                           <div className="space-y-2">
-                              <div className="flex items-center gap-2">
-                                <span className="text-[11px] font-black uppercase tracking-tight">{c.user}</span>
-                                <span className="text-[9px] text-pink-500 font-bold uppercase flex items-center gap-1">
-                                  <Instagram size={8} /> {c.ig}
-                                </span>
-                              </div>
-                              <p className="text-gray-400 text-sm leading-relaxed">"{c.text}"</p>
-                           </div>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text"
+                      value={iaQuestion}
+                      onChange={(e) => setIaQuestion(e.target.value)}
+                      placeholder={t.iaPlaceholder}
+                      className="flex-grow bg-black/20 border border-white/20 p-5 rounded-2xl text-white text-sm outline-none focus:bg-black/40 transition-all placeholder:text-blue-200/50"
+                    />
+                    <button 
+                      onClick={askAi}
+                      className="bg-white text-blue-600 p-5 rounded-2xl font-black hover:scale-105 active:scale-95 transition-all shadow-xl"
+                    >
+                      {isAiLoading ? <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" /> : <Send size={24} />}
+                    </button>
+                  </div>
+
+                  <AnimatePresence>
+                    {iaAnswer && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-black/40 backdrop-blur-md p-6 rounded-[2rem] border border-white/10"
+                      >
+                        <p className="text-sm font-medium leading-relaxed italic">
+                          "{iaAnswer}"
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </section>
+
+              {/* Botón Compartido Inteligente */}
+              <button 
+                onClick={() => {
+                  const url = `https://wa.me/?text=${encodeURIComponent(selected.sharePhrases[lang] + " " + window.location.href)}`;
+                  window.open(url, '_blank');
+                }}
+                className="flex items-center justify-between w-full bg-zinc-800/50 p-6 rounded-[2rem] border border-white/5 hover:bg-zinc-800 transition-all group"
+              >
+                <div className="flex flex-col items-start">
+                  <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] mb-1">Impacto Social</span>
+                  <span className="text-sm font-bold text-zinc-300">{selected.sharePhrases[lang]}</span>
+                </div>
+                <div className="bg-blue-600 p-4 rounded-2xl group-hover:rotate-12 transition-transform shadow-lg">
+                  <Share2 size={24} />
+                </div>
+              </button>
+
+              {/* SECCIÓN DE COMENTARIOS (Original) */}
+              <section className="pt-10 space-y-6">
+                <div className="flex items-center gap-4">
+                   <h3 className="text-2xl font-black italic tracking-tighter">{t.comments}</h3>
+                   <div className="flex-grow h-[1px] bg-zinc-800" />
+                   <span className="text-xs font-black bg-zinc-800 px-3 py-1 rounded-full">{selected.comments.length}</span>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="bg-zinc-900 rounded-3xl p-6 border border-white/5 flex gap-4">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-black">
+                      {user.name[0]}
+                    </div>
+                    <div className="flex-grow space-y-3">
+                      <textarea 
+                        className="w-full bg-transparent border-none outline-none text-sm resize-none placeholder:text-zinc-600"
+                        placeholder={t.postComment}
+                        rows={2}
+                      />
+                      <div className="flex justify-end">
+                        <button className="bg-white text-black px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all">
+                          {t.publish}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {selected.comments.map((c: any) => (
+                    <div key={c.id} className="bg-zinc-900/30 p-6 rounded-3xl border border-white/5 flex gap-4">
+                      <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-xs font-black">
+                        {c.user[0]}
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-black uppercase">{c.user}</span>
+                          <span className="text-[10px] text-blue-500 font-bold">{c.rep} RP</span>
                         </div>
-                      ))}
+                        <p className="text-sm text-zinc-400 leading-relaxed">{c.text}</p>
+                      </div>
                     </div>
-                  </section>
+                  ))}
                 </div>
-              )}
-
-              {isCapturing && (
-                <div className="mt-32 pt-10 border-t-2 border-black flex justify-between items-center italic font-black">
-                  <span className="text-2xl tracking-tighter">INFOXITY.INTEL</span>
-                  <div className="text-right text-[8px] uppercase tracking-widest text-gray-500">© 2026 Archive</div>
-                </div>
-              )}
-            </motion.article>
+              </section>
+            </motion.div>
           )}
         </AnimatePresence>
       </main>
 
-      <footer className="pb-32 pt-10 text-center opacity-30">
-        <p className="text-[9px] font-black tracking-[1em] uppercase">Infoxity Network</p>
-      </footer>
-      
-      {isCapturing && (
-        <button onClick={() => setIsCapturing(false)} className="fixed bottom-10 right-10 bg-black text-white p-5 rounded-full z-[200] border border-white/20 shadow-2xl active:scale-90 transition-all">
-          <X size={24} />
-        </button>
-      )}
+      {/* BARRA DE NAVEGACIÓN INFERIOR (Estilo Mobile-First) */}
+      <nav className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-sm">
+        <div className="bg-zinc-900/90 backdrop-blur-2xl border border-white/10 rounded-[3rem] px-8 py-5 flex justify-between items-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+          <NavItem icon={<Home />} active={view === 'feed'} onClick={() => { setSelected(null); setView('feed'); }} />
+          <NavItem icon={<Search />} active={view === 'search'} onClick={() => setView('search')} />
+          <div className="relative -mt-12">
+            <button 
+              onClick={() => setSelected(INITIAL_NEWS[Math.floor(Math.random()*INITIAL_NEWS.length)])}
+              className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-[0_10px_30px_rgba(37,99,235,0.5)] active:scale-90 transition-all border-4 border-black"
+            >
+              <Zap size={28} fill="currentColor" />
+            </button>
+          </div>
+          <NavItem icon={<Library />} active={view === 'library'} onClick={() => setView('library')} />
+          <NavItem icon={<Users />} active={false} onClick={() => {}} />
+        </div>
+      </nav>
+
+      {/* NOTIFICACIONES EMERGENTES */}
+      <AnimatePresence>
+        {showNotification && (
+          <motion.div 
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 100 }}
+            className="fixed top-24 left-1/2 -translate-x-1/2 z-[200] bg-blue-600 text-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl flex items-center gap-3"
+          >
+            <CheckCircle2 size={18} /> {t.voteThanks}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
+  );
+}
+
+// --- 7. COMPONENTES ATÓMICOS ---
+
+function NewsCard({ news, t, lang, isLiked, onLike, onClick }: any) {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="group bg-zinc-900/40 border border-white/5 rounded-[3rem] overflow-hidden hover:border-blue-500/30 transition-all"
+    >
+      <div className="p-8 space-y-5">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-blue-500">
+              {lang === 'es' ? news.cat : news.catEn}
+            </span>
+          </div>
+          <div className="bg-white/5 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-tighter text-zinc-500">
+            {news.likes + (isLiked ? 1 : 0)} LIKES
+          </div>
+        </div>
+
+        <h3 
+          onClick={onClick}
+          className="text-2xl font-black italic tracking-tighter leading-tight group-hover:text-blue-400 transition-colors cursor-pointer"
+        >
+          {lang === 'es' ? news.title : news.titleEn}
+        </h3>
+
+        <div className="flex gap-4 pt-2">
+          {news.summaryIA.slice(0, 1).map((point: string, i: number) => (
+            <p key={i} className="text-xs text-zinc-400 font-medium line-clamp-2 leading-relaxed">
+              {point}
+            </p>
+          ))}
+        </div>
+
+        <div className="flex items-center justify-between pt-4">
+          <div className="flex -space-x-2">
+            {[1,2,3].map(i => (
+              <div key={i} className="w-8 h-8 rounded-full border-2 border-zinc-900 bg-zinc-800 flex items-center justify-center text-[8px] font-black">
+                U{i}
+              </div>
+            ))}
+            <div className="w-8 h-8 rounded-full border-2 border-zinc-900 bg-blue-600 flex items-center justify-center text-[8px] font-black">
+              +12
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            <button 
+              onClick={(e) => { e.stopPropagation(); onLike(); }}
+              className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isLiked ? 'bg-red-500 text-white' : 'bg-white/5 text-zinc-500 hover:bg-white/10'}`}
+            >
+              <Heart size={20} fill={isLiked ? "currentColor" : "none"} />
+            </button>
+            <button 
+              onClick={onClick}
+              className="bg-white text-black px-6 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-blue-600 hover:text-white transition-all"
+            >
+              Leer más
+            </button>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function NavItem({ icon, active, onClick }: { icon: any, active: boolean, onClick: () => void }) {
+  return (
+    <button 
+      onClick={onClick}
+      className={`p-3 rounded-2xl transition-all ${active ? 'text-blue-500 bg-blue-500/10' : 'text-zinc-500 hover:text-white hover:bg-white/5'}`}
+    >
+      {React.cloneElement(icon, { size: 22 })}
+    </button>
+  );
+}
+
+function LoginView({ t, onLogin }: any) {
+  const [name, setName] = useState("");
+  const [ig, setIg] = useState("");
+  const [step, setStep] = useState(0);
+
+  return (
+    <main className="fixed inset-0 bg-black flex items-center justify-center p-6 z-[1000]">
+      <div className="w-full max-w-sm space-y-12">
+        <div className="text-center space-y-4">
+          <motion.div 
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="w-24 h-24 bg-blue-600 mx-auto rounded-[2rem] flex items-center justify-center text-5xl font-black italic shadow-[0_0_50px_rgba(37,99,235,0.5)]"
+          >
+            IX
+          </motion.div>
+          <div className="space-y-1">
+            <h1 className="text-4xl font-black italic tracking-tighter uppercase">{t.siteName}</h1>
+            <p className="text-[10px] font-black text-blue-500 tracking-[0.5em] uppercase">{t.welcome}</p>
+          </div>
+        </div>
+
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="bg-zinc-900/50 p-10 rounded-[3.5rem] border border-white/5 space-y-6"
+        >
+          <div className="space-y-4">
+            <div className="relative">
+              <input 
+                type="text" 
+                placeholder={t.placeholderName}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full bg-white/5 border border-white/5 p-6 rounded-2xl text-white font-bold outline-none focus:border-blue-500 transition-all placeholder:text-zinc-600"
+              />
+            </div>
+            <div className="relative">
+              <input 
+                type="text" 
+                placeholder={t.placeholderIg}
+                value={ig}
+                onChange={(e) => setIg(e.target.value)}
+                className="w-full bg-white/5 border border-white/5 p-6 rounded-2xl text-white font-bold outline-none focus:border-blue-500 transition-all placeholder:text-zinc-600"
+              />
+            </div>
+          </div>
+
+          <button 
+            onClick={() => onLogin(name, ig)}
+            className="w-full bg-white text-black p-6 rounded-[2rem] font-black uppercase text-xs tracking-[0.3em] shadow-xl hover:bg-blue-600 hover:text-white transition-all active:scale-95"
+          >
+            {t.actionButton}
+          </button>
+        </motion.div>
+
+        <p className="text-[9px] text-center text-zinc-600 font-bold uppercase tracking-widest leading-relaxed px-10">
+          Al entrar, aceptas los protocolos de neutralidad y veracidad de la red Infoxity.
+        </p>
+      </div>
+    </main>
   );
 }
